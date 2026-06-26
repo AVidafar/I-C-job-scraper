@@ -8,6 +8,12 @@ I&C Job Scraper Bot v5.0
   • Adzuna (با API key)
   • FindWork.dev
   • Cloudflare Worker
+  https://remotive.com/
+  https://www.arbeitnow.com/
+  https://jobicy.com/
+  https://developer.adzuna.com/
+  https://remotejobs.org/
+  https://findwork.dev
 
 منابع پولی (اختیاری):
   • JSearch via RapidAPI  — پلن رایگان 200 req/ماه
@@ -88,16 +94,16 @@ MIN_FIT_SCORE    = 35
 MAX_JOB_AGE_DAYS = 7
 
 JSEARCH_QUERIES = {
-    1: ["Junior I&C remote", "Technical I&C remote", "I&C Python remote"],
-    2: ["I&C Content Editor remote", "WordPress I&C Specialist remote"],
-    3: ["on-page I&C specialist remote", "I&C copywriter remote"],
+    1: ["I&C junior remote", "Technical I&C remote", "I&C remote"],
+    2: ["I&C senior engineer remote", "SCADA engineer remote"],
+    3: ["Control engineer remote", "PLC programmer remote"],
 }
 
 _DEFAULT_SKILLS = [
-    "python", "wordpress", "technical I&C", "on-page I&C",
-    "screaming frog", "ahrefs", "semrush", "google analytics",
-    "google search console", "content", "keyword research",
-    "html", "cms", "link building", "schema",
+    "siemens", "eplan", "technical I&C", "instrument",
+    "autocad", "aveva", "aveva instrumentation", "aveva e3d",
+    "HMI", "basic design", "FEED",
+    "EPC", "detail design", "electrcial", "DCS", "PLC",
 ]
 _user_skills_env = os.environ.get("USER_SKILLS", "")
 MY_SKILLS = [s.strip().lower() for s in _user_skills_env.split(",") if s.strip()] if _user_skills_env else _DEFAULT_SKILLS
@@ -106,16 +112,15 @@ BLACKLIST_KEYWORDS = [
     "us residents only", "must reside in us", "must be located in us",
     "must be based in the us", "must be based in us",
     "must be authorized to work in the us",
-    "senior I&C", "head of I&C", "director of I&C", "vp of",
     "agency", "full stack", "fullstack",
     "native english speaker only",
     "10+ years", "8+ years", "7+ years",
 ]
 
 BOOST_KEYWORDS = {
-    "technical I&C": 20, "python": 18, "wordpress": 15,
+    "I&C": 20, "control": 18, "instrument": 15,
     "junior": 18, "entry level": 15, "associate": 12,
-    "I&C specialist": 12, "I&C editor": 12, "content editor": 10,
+    "Instrument engineer": 12, "control engineer": 12, "I&C engineer": 10,
     "on-page": 10, "part-time": 8, "contract": 5,
     "remote-first": 8, "async": 5, "flexible": 4,
 }
@@ -197,9 +202,26 @@ def calculate_fit_score(job: dict) -> tuple:
 
 def fetch_remotive() -> list:
     endpoints = [
-        "https://remotive.com/api/remote-jobs?category=I&C&limit=20",
-        "https://remotive.com/api/remote-jobs?search=technical+I&C&limit=10",
-        "https://remotive.com/api/remote-jobs?search=I&C+content&limit=10",
+        "https://remotive.com/api/remote-jobs?category=Instrument+engineer&limit=20",
+        "https://remotive.com/api/remote-jobs?search=Control+engineer&limit=10",
+        "https://remotive.com/api/remote-jobs?search=I&C+engineer&limit=10",
+        "https://www.arbeitnow.com/remote-jobs?category=Instrument+engineer&limit=20",
+        "https://www.arbeitnow.com/remote-jobs?search=Control+engineer&limit=10",
+        "https://www.arbeitnow.com/remote-jobs?search=I&C+engineer&limit=10",
+        "https://jobicy.com/remote-jobs?category=Instrument+engineer&limit=20",
+        "https://jobicy.com/remote-jobs?search=Control+engineer&limit=10",
+        "https://jobicy.com/remote-jobs?search=I&C+engineer&limit=10",
+        "https://developer.adzuna.com/remote-jobs?category=Instrument+engineer&limit=20",
+        "https://developer.adzuna.com/remote-jobs?search=Control+engineer&limit=10",
+        "https://developer.adzuna.com/remote-jobs?search=I&C+engineer&limit=10",
+        "https://remotejobs.org/remote-jobs?category=Instrument+engineer&limit=20",
+        "https://remotejobs.org/remote-jobs?search=Control+engineer&limit=10",
+        "https://remotejobs.org/remote-jobs?search=I&C+engineer&limit=10",
+        "https://findwork.dev/remote-jobs?category=Instrument+engineer&limit=20",
+        "https://findwork.dev/remote-jobs?search=Control+engineer&limit=10",
+        "https://findwork.dev/remote-jobs?search=I&C+engineer&limit=10",
+  
+  
     ]
     results = []
     for url in endpoints:
@@ -228,9 +250,9 @@ def fetch_remotive() -> list:
 
 def fetch_jobicy() -> list:
     endpoints = [
-        "https://jobicy.com/api/v2/remote-jobs?tag=I&C&count=20",
-        "https://jobicy.com/api/v2/remote-jobs?tag=content-marketing&count=15",
-        "https://jobicy.com/api/v2/remote-jobs?tag=wordpress&count=10",
+        "https://jobicy.com/api/v2/remote-jobs?tag=Instrument+engineer&limit=20",
+        "https://jobicy.com/api/v2/remote-jobs?tag=Control+engineer&limit=15",
+        "https://jobicy.com/api/v2/remote-jobs?tag=I&C+engineer&limit=10",
     ]
     results = []
     for url in endpoints:
@@ -262,7 +284,7 @@ def fetch_jobicy() -> list:
     return results
 
 def fetch_arbeitnow() -> list:
-    I&C_TERMS = ["I&C", "search engine optimization", "content editor", "technical I&C", "wordpress I&C"]
+    I&C_TERMS = ["I&C", "instrument", "control", "PLC", "SCADA", "instrumentation", "control valve"]
     try:
         resp = requests.get("https://arbeitnow.com/api/job-board-api", timeout=15, headers={"User-Agent": "Mozilla/5.0"})
         resp.raise_for_status()
@@ -328,7 +350,7 @@ def fetch_adzuna() -> list:
     return results
 
 def fetch_findwork() -> list:
-    I&C_TERMS = ["I&C", "search engine", "content editor", "wordpress", "technical I&C", "organic", "keyword"]
+    I&C_TERMS = ["I&C", "instrument", "control", "PLC", "SCADA", "instrumentation", "control valve"]
     try:
         resp = requests.get(
             "https://findwork.dev/api/jobs/",
