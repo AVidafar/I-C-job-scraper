@@ -1,5 +1,5 @@
 """
-SEO Job Scraper Bot v5.0
+I&C Job Scraper Bot v5.0
 ========================
 منابع رایگان:
   • Remotive.com
@@ -88,13 +88,13 @@ MIN_FIT_SCORE    = 35
 MAX_JOB_AGE_DAYS = 7
 
 JSEARCH_QUERIES = {
-    1: ["Junior SEO remote", "Technical SEO remote", "SEO Python remote"],
-    2: ["SEO Content Editor remote", "WordPress SEO Specialist remote"],
-    3: ["on-page SEO specialist remote", "SEO copywriter remote"],
+    1: ["Junior I&C remote", "Technical I&C remote", "I&C Python remote"],
+    2: ["I&C Content Editor remote", "WordPress I&C Specialist remote"],
+    3: ["on-page I&C specialist remote", "I&C copywriter remote"],
 }
 
 _DEFAULT_SKILLS = [
-    "python", "wordpress", "technical seo", "on-page seo",
+    "python", "wordpress", "technical I&C", "on-page I&C",
     "screaming frog", "ahrefs", "semrush", "google analytics",
     "google search console", "content", "keyword research",
     "html", "cms", "link building", "schema",
@@ -106,16 +106,16 @@ BLACKLIST_KEYWORDS = [
     "us residents only", "must reside in us", "must be located in us",
     "must be based in the us", "must be based in us",
     "must be authorized to work in the us",
-    "senior seo", "head of seo", "director of seo", "vp of",
+    "senior I&C", "head of I&C", "director of I&C", "vp of",
     "agency", "full stack", "fullstack",
     "native english speaker only",
     "10+ years", "8+ years", "7+ years",
 ]
 
 BOOST_KEYWORDS = {
-    "technical seo": 20, "python": 18, "wordpress": 15,
+    "technical I&C": 20, "python": 18, "wordpress": 15,
     "junior": 18, "entry level": 15, "associate": 12,
-    "seo specialist": 12, "seo editor": 12, "content editor": 10,
+    "I&C specialist": 12, "I&C editor": 12, "content editor": 10,
     "on-page": 10, "part-time": 8, "contract": 5,
     "remote-first": 8, "async": 5, "flexible": 4,
 }
@@ -142,7 +142,7 @@ def load_prompt_template() -> str:
                     return content
     except Exception as e:
         log.warning(f"Could not load prompt.txt: {e}")
-    return "Write a short, professional cover letter for the '{title}' position at '{company}'. Focus on my technical SEO skills. Job link: {url}"
+    return "Write a short, professional cover letter for the '{title}' position at '{company}'. Focus on my technical I&C skills. Job link: {url}"
 
 # ── Seen Jobs Cache ─────────────────────────────────────────────────────────
 
@@ -182,7 +182,7 @@ def calculate_fit_score(job: dict) -> tuple:
             matched_skills.append(skill)
             score += 7
 
-    if re.search(r"\bseo\b", title):
+    if re.search(r"\bI&C\b", title):
         score += 12
     if job.get("salary"):
         score += 10
@@ -197,9 +197,9 @@ def calculate_fit_score(job: dict) -> tuple:
 
 def fetch_remotive() -> list:
     endpoints = [
-        "https://remotive.com/api/remote-jobs?category=seo&limit=20",
-        "https://remotive.com/api/remote-jobs?search=technical+seo&limit=10",
-        "https://remotive.com/api/remote-jobs?search=seo+content&limit=10",
+        "https://remotive.com/api/remote-jobs?category=I&C&limit=20",
+        "https://remotive.com/api/remote-jobs?search=technical+I&C&limit=10",
+        "https://remotive.com/api/remote-jobs?search=I&C+content&limit=10",
     ]
     results = []
     for url in endpoints:
@@ -228,7 +228,7 @@ def fetch_remotive() -> list:
 
 def fetch_jobicy() -> list:
     endpoints = [
-        "https://jobicy.com/api/v2/remote-jobs?tag=seo&count=20",
+        "https://jobicy.com/api/v2/remote-jobs?tag=I&C&count=20",
         "https://jobicy.com/api/v2/remote-jobs?tag=content-marketing&count=15",
         "https://jobicy.com/api/v2/remote-jobs?tag=wordpress&count=10",
     ]
@@ -262,7 +262,7 @@ def fetch_jobicy() -> list:
     return results
 
 def fetch_arbeitnow() -> list:
-    SEO_TERMS = ["seo", "search engine optimization", "content editor", "technical seo", "wordpress seo"]
+    I&C_TERMS = ["I&C", "search engine optimization", "content editor", "technical I&C", "wordpress I&C"]
     try:
         resp = requests.get("https://arbeitnow.com/api/job-board-api", timeout=15, headers={"User-Agent": "Mozilla/5.0"})
         resp.raise_for_status()
@@ -272,7 +272,7 @@ def fetch_arbeitnow() -> list:
                 continue
             title = (j.get("title") or "").lower()
             desc  = (j.get("description") or "").lower()[:300]
-            if not any(t in title or t in desc for t in SEO_TERMS):
+            if not any(t in title or t in desc for t in I&C_TERMS):
                 continue
             results.append({
                 "id":           f"arbeitnow_{j.get('slug', '')}",
@@ -297,7 +297,7 @@ def fetch_adzuna() -> list:
     if not ADZUNA_APP_ID or not ADZUNA_API_KEY:
         return []
     results = []
-    for q in ["seo", "technical seo", "seo specialist"]:
+    for q in ["I&C", "technical I&C", "I&C specialist"]:
         try:
             resp = requests.get(
                 f"https://api.adzuna.com/v1/api/jobs/us/search/1",
@@ -328,12 +328,12 @@ def fetch_adzuna() -> list:
     return results
 
 def fetch_findwork() -> list:
-    SEO_TERMS = ["seo", "search engine", "content editor", "wordpress", "technical seo", "organic", "keyword"]
+    I&C_TERMS = ["I&C", "search engine", "content editor", "wordpress", "technical I&C", "organic", "keyword"]
     try:
         resp = requests.get(
             "https://findwork.dev/api/jobs/",
-            params={"search": "seo", "remote": "true", "order_by": "-date_posted"},
-            headers={"User-Agent": "Mozilla/5.0 (compatible; SEOJobBot/5.0)"},
+            params={"search": "I&C", "remote": "true", "order_by": "-date_posted"},
+            headers={"User-Agent": "Mozilla/5.0 (compatible; I&CJobBot/5.0)"},
             timeout=15,
         )
         if resp.status_code == 403:
@@ -344,7 +344,7 @@ def fetch_findwork() -> list:
         for j in resp.json().get("results", []):
             title = (j.get("role") or "").lower()
             desc  = (j.get("text") or "").lower()[:500]
-            if not any(t in title or t in desc for t in SEO_TERMS):
+            if not any(t in title or t in desc for t in I&C_TERMS):
                 continue
             results.append({
                 "id":           f"findwork_{j.get('id', '')}",
@@ -372,7 +372,7 @@ def fetch_cloudflare_worker() -> list:
     if not worker_url.endswith("/jobs"):
         worker_url += "/jobs"
     try:
-        resp = requests.get(worker_url, headers={"User-Agent": "SEOJobBot/5.0"}, timeout=20)
+        resp = requests.get(worker_url, headers={"User-Agent": "I&CJobBot/5.0"}, timeout=20)
         if resp.status_code in (401, 404):
             log.error(f"CF Worker: {resp.status_code}")
             return []
@@ -612,7 +612,7 @@ def batch_append_to_sheet(client, rows: list) -> None:
 
 def main() -> None:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    log.info(f"=== SEO Job Scraper v5.0 started at {now} ===")
+    log.info(f"=== I&C Job Scraper v5.0 started at {now} ===")
 
     seen_jobs = load_seen_jobs()
     sheets = get_sheets_client()
@@ -723,7 +723,7 @@ def main() -> None:
         return
 
     send_telegram(
-        f"🤖 <b>New SEO Jobs</b>\n"
+        f"🤖 <b>New I&C Jobs</b>\n"
         f"📅 {now}\n\n"
         f"✅ <b>{len(qualified)}</b> jobs (sorted by fit)\n"
         f"⛔ {stats['blacklisted']} filtered | "
