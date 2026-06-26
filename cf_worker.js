@@ -1,6 +1,6 @@
 /**
  * ╔══════════════════════════════════════════════════════════════════╗
- * ║          SEO Job Bot — Cloudflare Worker v3.1                   ║
+ * ║          I&C Job Bot — Cloudflare Worker v3.1                   ║
  * ║                                                                  ║
  * ║  منابع: Remote OK + We Work Remotely (RSS)                      ║
  * ║  endpoint: GET /jobs                                             ║
@@ -18,7 +18,7 @@ export default {
     if (path === "/" || path === "/health") {
       return Response.json({
         status:    "ok",
-        worker:    "SEO Job Bot",
+        worker:    "I&C Job Bot",
         version:   "3.1",
         endpoints: ["/jobs", "/health"],
         timestamp: new Date().toISOString(),
@@ -77,14 +77,14 @@ async function fetchAllJobs() {
 
 // ── Remote OK ────────────────────────────────────────────────────────────
 async function fetchRemoteOK() {
-  const SEO_TAGS = ["seo", "content-writing", "marketing", "wordpress"];
+  const I&C_TAGS = ["I&C", "content-writing", "marketing", "wordpress"];
   const allJobs  = [];
 
-  for (const tag of SEO_TAGS) {
+  for (const tag of I&C_TAGS) {
     try {
       const resp = await fetch(`https://remoteok.com/api?tag=${tag}`, {
         headers: {
-          "User-Agent": "Mozilla/5.0 (compatible; SEOJobBot/3.1)",
+          "User-Agent": "Mozilla/5.0 (compatible; I&CJobBot/3.1)",
           "Accept":     "application/json",
         },
       });
@@ -144,7 +144,7 @@ async function fetchWeWorkRemotelyRSS() {
     try {
       const resp = await fetch(feedUrl, {
         headers: {
-          "User-Agent": "Mozilla/5.0 (compatible; SEOJobBot/3.1)",
+          "User-Agent": "Mozilla/5.0 (compatible; I&CJobBot/3.1)",
           "Accept":     "application/rss+xml, application/xml, text/xml",
         },
       });
@@ -161,14 +161,14 @@ async function fetchWeWorkRemotelyRSS() {
     await sleep(500);
   }
 
-  const SEO_TERMS = ["seo", "search engine", "content editor", "wordpress",
-                     "technical seo", "copywrite", "organic"];
+  const I&C_TERMS = ["I&C", "search engine", "content editor", "wordpress",
+                     "technical I&C", "copywrite", "organic"];
   const filtered  = allJobs.filter(j => {
     const text = `${j.title} ${j.description}`.toLowerCase();
-    return SEO_TERMS.some(t => text.includes(t));
+    return I&C_TERMS.some(t => text.includes(t));
   });
 
-  console.log(`We Work Remotely → ${filtered.length} SEO jobs (from ${allJobs.length} total)`);
+  console.log(`We Work Remotely → ${filtered.length} I&C jobs (from ${allJobs.length} total)`);
   return filtered;
 }
 
