@@ -96,9 +96,9 @@ MIN_FIT_SCORE    = 35
 MAX_JOB_AGE_DAYS = 7
 
 JSEARCH_QUERIES = {
-    1: ["I&C junior remote", "Technical I&C remote", "I&C remote"],
-    2: ["I&C senior engineer remote", "SCADA engineer remote"],
-    3: ["Control engineer remote", "PLC programmer remote"],
+    1: ["I&C junior", "Technical I&C", "I&C"],
+    2: ["I&C senior engineer", "SCADA engineer"],
+    3: ["Control engineer", "PLC programmer remote"],
 }
 
 _DEFAULT_SKILLS = [
@@ -222,7 +222,9 @@ def fetch_remotive() -> list:
         "https://findwork.dev/remote-jobs?category=Instrument+engineer&limit=20",
         "https://findwork.dev/remote-jobs?search=Control+engineer&limit=10",
         "https://findwork.dev/remote-jobs?search=I&C+engineer&limit=10",
-  
+        "https://linkedin.com/remote-jobs?category=Instrument+engineer&limit=20",
+        "https://linkedin.com/remote-jobs?search=Control+engineer&limit=10",
+        "https://linkedin.com/remote-jobs?search=I&C+engineer&limit=10",
   
     ]
     results = []
