@@ -8,6 +8,8 @@ I&C Job Scraper Bot v5.0
   • Adzuna (با API key)
   • FindWork.dev
   • Cloudflare Worker
+  • Linkedin
+
   https://remotive.com/
   https://www.arbeitnow.com/
   https://jobicy.com/
