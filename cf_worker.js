@@ -77,10 +77,10 @@ async function fetchAllJobs() {
 
 // ── Remote OK ────────────────────────────────────────────────────────────
 async function fetchRemoteOK() {
-  const I&C_TAGS = ["I&C", "instrument", "control system", "PLC", "SCADA", "HMI", "EPLAN", "AVEVA", "Intools", "Siemens", "PCS7", "AutoCAD"];
+  const IandC_TAGS = ["I&C", "instrument", "control system", "PLC", "SCADA", "HMI", "EPLAN", "AVEVA", "Intools", "Siemens", "PCS7", "AutoCAD"];
   const allJobs  = [];
 
-  for (const tag of I&C_TAGS) {
+  for (const tag of IandC_TAGS) {
     try {
       const resp = await fetch(`https://remoteok.com/api?tag=${tag}`, {
         headers: {
@@ -161,10 +161,10 @@ async function fetchWeWorkRemotelyRSS() {
     await sleep(500);
   }
 
-  const I&C_TERMS = ["I&C", "instrument", "control system", "PLC", "SCADA", "HMI", "EPLAN", "AVEVA", "Intools", "Siemens", "PCS7", "AutoCAD"];
+  const IandC_TERMS = ["I&C", "instrument", "control system", "PLC", "SCADA", "HMI", "EPLAN", "AVEVA", "Intools", "Siemens", "PCS7", "AutoCAD"];
   const filtered  = allJobs.filter(j => {
     const text = `${j.title} ${j.description}`.toLowerCase();
-    return I&C_TERMS.some(t => text.includes(t));
+    return IandC_TERMS.some(t => text.includes(t));
   });
 
   console.log(`We Work Remotely → ${filtered.length} I&C jobs (from ${allJobs.length} total)`);
