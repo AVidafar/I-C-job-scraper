@@ -270,7 +270,7 @@ def fetch_jobicy() -> list:
     return results
 
 def fetch_arbeitnow() -> list:
-    I&C_TERMS = ["I&C", "instrument", "control", "PLC", "SCADA", "instrumentation", "control valve"]
+    IandC_TERMS = ["I&C", "instrument", "control", "PLC", "SCADA", "instrumentation", "control valve"]
     try:
         resp = requests.get("https://arbeitnow.com/api/job-board-api", timeout=15, headers={"User-Agent": "Mozilla/5.0"})
               resp.raise_for_status()
@@ -280,7 +280,7 @@ def fetch_arbeitnow() -> list:
                 continue
             title = (j.get("title") or "").lower()
             desc  = (j.get("description") or "").lower()[:300]
-            if not any(t in title or t in desc for t in I&C_TERMS):
+            if not any(t in title or t in desc for t in IandC_TERMS):
                 continue
             results.append({
                 "id":           f"arbeitnow_{j.get('slug', '')}",
@@ -336,7 +336,7 @@ def fetch_adzuna() -> list:
     return results
 
 def fetch_findwork() -> list:
-    I&C_TERMS =  ["I&C junior engineer", "I&C senior engineer", "Instrument engineer", "control system engineer", "PLC engineer", "SCADA engineer", "Control engineer", "PLC programmer remote"]
+    IandC_TERMS =  ["I&C junior engineer", "I&C senior engineer", "Instrument engineer", "control system engineer", "PLC engineer", "SCADA engineer", "Control engineer", "PLC programmer remote"]
     try:
         resp = requests.get(
             "https://findwork.dev/api/jobs/",
@@ -352,7 +352,7 @@ def fetch_findwork() -> list:
         for j in resp.json().get("results", []):
             title = (j.get("role") or "").lower()
             desc  = (j.get("text") or "").lower()[:500]
-            if not any(t in title or t in desc for t in I&C_TERMS):
+            if not any(t in title or t in desc for t in IandC_TERMS):
                 continue
             results.append({
                 "id":           f"findwork_{j.get('id', '')}",
@@ -445,7 +445,7 @@ def fetch_linkedin() -> list:
 
 
 def fetch_linkedin1() -> list:
-    I&C_TERMS =  ["I&C junior engineer", "I&C senior engineer", "Instrument engineer", "control system engineer", "PLC engineer", "SCADA engineer", "Control engineer", "PLC programmer remote"]
+    IandC_TERMS =  ["I&C junior engineer", "I&C senior engineer", "Instrument engineer", "control system engineer", "PLC engineer", "SCADA engineer", "Control engineer", "PLC programmer remote"]
     try:
         resp = requests.get("https://www.linkedin.com/jobs/remote-jobs/", timeout=15, headers={"User-Agent": "Mozilla/5.0"})
               resp.raise_for_status()
@@ -455,7 +455,7 @@ def fetch_linkedin1() -> list:
                 continue
             title = (j.get("title") or "").lower()
             desc  = (j.get("description") or "").lower()[:300]
-            if not any(t in title or t in desc for t in I&C_TERMS):
+            if not any(t in title or t in desc for t in IandC_TERMS):
                 continue
             results.append({
                 "id":           f"linkedin1_{j.get('slug', '')}",
