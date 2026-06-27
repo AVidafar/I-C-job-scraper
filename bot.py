@@ -207,25 +207,7 @@ def fetch_remotive() -> list:
         "https://remotive.com/api/remote-jobs?category=Instrument+engineer&limit=20",
         "https://remotive.com/api/remote-jobs?search=Control+engineer&limit=10",
         "https://remotive.com/api/remote-jobs?search=I&C+engineer&limit=10",
-        "https://www.arbeitnow.com/remote-jobs?category=Instrument+engineer&limit=20",
-        "https://www.arbeitnow.com/remote-jobs?search=Control+engineer&limit=10",
-        "https://www.arbeitnow.com/remote-jobs?search=I&C+engineer&limit=10",
-        "https://jobicy.com/remote-jobs?category=Instrument+engineer&limit=20",
-        "https://jobicy.com/remote-jobs?search=Control+engineer&limit=10",
-        "https://jobicy.com/remote-jobs?search=I&C+engineer&limit=10",
-        "https://developer.adzuna.com/remote-jobs?category=Instrument+engineer&limit=20",
-        "https://developer.adzuna.com/remote-jobs?search=Control+engineer&limit=10",
-        "https://developer.adzuna.com/remote-jobs?search=I&C+engineer&limit=10",
-        "https://remotejobs.org/remote-jobs?category=Instrument+engineer&limit=20",
-        "https://remotejobs.org/remote-jobs?search=Control+engineer&limit=10",
-        "https://remotejobs.org/remote-jobs?search=I&C+engineer&limit=10",
-        "https://findwork.dev/remote-jobs?category=Instrument+engineer&limit=20",
-        "https://findwork.dev/remote-jobs?search=Control+engineer&limit=10",
-        "https://findwork.dev/remote-jobs?search=I&C+engineer&limit=10",
-        "https://linkedin.com/remote-jobs?category=Instrument+engineer&limit=20",
-        "https://linkedin.com/remote-jobs?search=Control+engineer&limit=10",
-        "https://linkedin.com/remote-jobs?search=I&C+engineer&limit=10",
-  
+       
     ]
     results = []
     for url in endpoints:
@@ -291,7 +273,7 @@ def fetch_arbeitnow() -> list:
     I&C_TERMS = ["I&C", "instrument", "control", "PLC", "SCADA", "instrumentation", "control valve"]
     try:
         resp = requests.get("https://arbeitnow.com/api/job-board-api", timeout=15, headers={"User-Agent": "Mozilla/5.0"})
-        resp.raise_for_status()
+              resp.raise_for_status()
         results = []
         for j in resp.json().get("data", []):
             if not j.get("remote"):
@@ -427,6 +409,72 @@ def fetch_cloudflare_worker() -> list:
         return jobs
     except Exception as e:
         log.error(f"CF Worker error: {e}")
+        return []
+
+
+def fetch_linkedin() -> list:
+    endpoints = [
+        "https://www.linkedin.com/jobs/remote-jobs?category=Instrument+engineer&limit=20",
+        "https://www.linkedin.com/jobs/remote-jobs?search=Control+engineer&limit=10",
+        "https://www.linkedin.com/jobs/remote-jobs?search=I&C+engineer&limit=10",
+       
+    ]
+    results = []
+    for url in endpoints:
+        try:
+            resp = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+            resp.raise_for_status()
+            for j in resp.json().get("jobs", []):
+                results.append({
+                    "id":           f"linkedin_{j.get('id', '')}",
+                    "title":        j.get("title", ""),
+                    "company":      j.get("company_name", ""),
+                    "description":  j.get("description", ""),
+                    "salary":       j.get("salary", ""),
+                    "remote":       True,
+                    "url":          j.get("url", ""),
+                    "source":       "Linkedin",
+                    "source_emoji": "🌐",
+                    "posted_at":    (j.get("publication_date") or "")[:10],
+                    "location":     "Remote",
+                })
+        except Exception as e:
+            log.error(f"Linkedin error: {e}")
+        time.sleep(1)
+    log.info(f"Linkedin -> {len(results)} jobs")
+    return results
+
+
+def fetch_linkedin1() -> list:
+    I&C_TERMS = ["I&C", "instrument", "control", "PLC", "SCADA", "instrumentation", "control valve"]
+    try:
+        resp = requests.get("https://www.linkedin.com/jobs", timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+              resp.raise_for_status()
+        results = []
+        for j in resp.json().get("data", []):
+            if not j.get("remote"):
+                continue
+            title = (j.get("title") or "").lower()
+            desc  = (j.get("description") or "").lower()[:300]
+            if not any(t in title or t in desc for t in I&C_TERMS):
+                continue
+            results.append({
+                "id":           f"linkedin1_{j.get('slug', '')}",
+                "title":        j.get("title", ""),
+                "company":      j.get("company_name", ""),
+                "description":  j.get("description", ""),
+                "salary":       "",
+                "remote":       True,
+                "url":          j.get("url", ""),
+                "source":       "Linkedin1",
+                "source_emoji": "🔷",
+                "posted_at":    datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                "location":     "Remote",
+            })
+        log.info(f"Linkedin1 -> {len(results)} jobs")
+        return results
+    except Exception as e:
+        log.error(f"Linkedin1 error: {e}")
         return []
 
 # ── JSearch API (اختیاری) ───────────────────────────────────────────────────
@@ -655,6 +703,8 @@ def main() -> None:
         (fetch_adzuna, "Adzuna"),
         (fetch_findwork, "FindWork"),
         (fetch_cloudflare_worker, "CF Worker"),
+        (fetch_linkedin, "Linkedin"),
+        (fetch_linkedin1, "Linkedin1"),
     ]:
         try:
             jobs = fn()
