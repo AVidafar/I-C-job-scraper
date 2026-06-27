@@ -77,7 +77,7 @@ async function fetchAllJobs() {
 
 // ── Remote OK ────────────────────────────────────────────────────────────
 async function fetchRemoteOK() {
-  const I&C_TAGS = ["I&C", "content-writing", "marketing", "wordpress"];
+  const I&C_TAGS = ["I&C", "instrument", "control system", "PLC", "SCADA", "HMI", "EPLAN", "AVEVA", "Intools", "Siemens", "PCS7", "AutoCAD"];
   const allJobs  = [];
 
   for (const tag of I&C_TAGS) {
@@ -161,8 +161,7 @@ async function fetchWeWorkRemotelyRSS() {
     await sleep(500);
   }
 
-  const I&C_TERMS = ["I&C", "search engine", "content editor", "wordpress",
-                     "technical I&C", "copywrite", "organic"];
+  const I&C_TERMS = ["I&C", "instrument", "control system", "PLC", "SCADA", "HMI", "EPLAN", "AVEVA", "Intools", "Siemens", "PCS7", "AutoCAD"];
   const filtered  = allJobs.filter(j => {
     const text = `${j.title} ${j.description}`.toLowerCase();
     return I&C_TERMS.some(t => text.includes(t));
