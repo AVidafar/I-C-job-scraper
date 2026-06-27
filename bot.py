@@ -96,13 +96,13 @@ MIN_FIT_SCORE    = 35
 MAX_JOB_AGE_DAYS = 7
 
 JSEARCH_QUERIES = {
-    1: ["I&C junior", "Technical I&C", "I&C"],
-    2: ["I&C senior engineer", "SCADA engineer"],
+    1: ["I&C junior engineer", "I&C senior engineer", "Instrument engineer", "control system engineer"],
+    2: ["PLC engineer", "SCADA engineer"],
     3: ["Control engineer", "PLC programmer remote"],
 }
 
 _DEFAULT_SKILLS = [
-    "siemens", "eplan", "technical I&C", "instrument",
+    "siemens", "eplan", "basic", "instrument",
     "autocad", "aveva", "aveva instrumentation", "aveva e3d",
     "HMI", "basic design", "FEED",
     "EPC", "detail design", "electrcial", "DCS", "PLC",
@@ -123,7 +123,7 @@ BOOST_KEYWORDS = {
     "I&C": 20, "control": 18, "instrument": 15,
     "junior": 18, "entry level": 15, "associate": 12,
     "Instrument engineer": 12, "control engineer": 12, "I&C engineer": 10,
-    "on-page": 10, "part-time": 8, "contract": 5,
+    "hybrid": 10, "part-time": 8, "contract": 5,
     "remote-first": 8, "async": 5, "flexible": 4,
 }
 
@@ -305,7 +305,7 @@ def fetch_adzuna() -> list:
     if not ADZUNA_APP_ID or not ADZUNA_API_KEY:
         return []
     results = []
-    for q in ["I&C", "technical I&C", "I&C specialist"]:
+    for q in ["I&C junior engineer", "I&C senior engineer", "Instrument engineer", "control system engineer", "PLC engineer", "SCADA engineer", "Control engineer", "PLC programmer remote"]:
         try:
             resp = requests.get(
                 f"https://api.adzuna.com/v1/api/jobs/us/search/1",
@@ -336,7 +336,7 @@ def fetch_adzuna() -> list:
     return results
 
 def fetch_findwork() -> list:
-    I&C_TERMS = ["I&C", "instrument", "control", "PLC", "SCADA", "instrumentation", "control valve"]
+    I&C_TERMS =  ["I&C junior engineer", "I&C senior engineer", "Instrument engineer", "control system engineer", "PLC engineer", "SCADA engineer", "Control engineer", "PLC programmer remote"]
     try:
         resp = requests.get(
             "https://findwork.dev/api/jobs/",
@@ -415,9 +415,7 @@ def fetch_cloudflare_worker() -> list:
 def fetch_linkedin() -> list:
     endpoints = [
         "https://www.linkedin.com/jobs/remote-jobs/"
-        "https://www.linkedin.com/jobs/remote-jobs?category=Instrument+engineer&limit=20",
-        "https://www.linkedin.com/jobs/remote-jobs?search=Control+engineer&limit=10",
-        "https://www.linkedin.com/jobs/remote-jobs?search=I&C+engineer&limit=10",
+
        
     ]
     results = []
@@ -447,7 +445,7 @@ def fetch_linkedin() -> list:
 
 
 def fetch_linkedin1() -> list:
-    I&C_TERMS = ["I&C", "instrument", "control", "PLC", "SCADA", "instrumentation", "control valve"]
+    I&C_TERMS =  ["I&C junior engineer", "I&C senior engineer", "Instrument engineer", "control system engineer", "PLC engineer", "SCADA engineer", "Control engineer", "PLC programmer remote"]
     try:
         resp = requests.get("https://www.linkedin.com/jobs/remote-jobs/", timeout=15, headers={"User-Agent": "Mozilla/5.0"})
               resp.raise_for_status()
