@@ -414,6 +414,7 @@ def fetch_cloudflare_worker() -> list:
 
 def fetch_linkedin() -> list:
     endpoints = [
+        "https://www.linkedin.com/jobs/remote-jobs/"
         "https://www.linkedin.com/jobs/remote-jobs?category=Instrument+engineer&limit=20",
         "https://www.linkedin.com/jobs/remote-jobs?search=Control+engineer&limit=10",
         "https://www.linkedin.com/jobs/remote-jobs?search=I&C+engineer&limit=10",
@@ -448,7 +449,7 @@ def fetch_linkedin() -> list:
 def fetch_linkedin1() -> list:
     I&C_TERMS = ["I&C", "instrument", "control", "PLC", "SCADA", "instrumentation", "control valve"]
     try:
-        resp = requests.get("https://www.linkedin.com/jobs", timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+        resp = requests.get("https://www.linkedin.com/jobs/remote-jobs/", timeout=15, headers={"User-Agent": "Mozilla/5.0"})
               resp.raise_for_status()
         results = []
         for j in resp.json().get("data", []):
