@@ -1,5 +1,5 @@
 Write a professional, concise cover letter for the '{title}' position at '{company}'.
-Focus on my technical I&C, instrument, control, PLC, DCS, SCADA, HMI, EPLAN, AVEVA skills and experience.
+Focus on my technical I&C skills, such as field instrumentation, control system, PLC, DCS, SCADA, EPLAN, AVEVA instrumentaion, AVEVA E3D skills and experience.
 
 Job link: {url}
 
