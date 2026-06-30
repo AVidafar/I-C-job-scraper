@@ -125,7 +125,7 @@ BOOST_KEYWORDS = {
     "Instrument engineer": 12, "control engineer": 12, "I&C engineer": 10,
     "hybrid": 10, "part-time": 8, "contract": 5,
     "remote-first": 8, "async": 5, "flexible": 4,
-  "Instrumentation Engineer",
+    "Instrumentation Engineer",
     "Instrumentation and Control",
     "I&C Engineer",
     "Control Systems Engineer",
