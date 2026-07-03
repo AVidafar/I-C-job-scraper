@@ -845,27 +845,27 @@ logger.info("Total collected jobs: %d", len(jobs))
 
 
   
-    raw_jobs = []
-    source_counts = {}
+  #  raw_jobs = []
+ #   source_counts = {}
 
     # ── منابع رایگان ─────────────────────────────────────────────────────────
-    for fn, name in [
-        (fetch_remotive, "Remotive"),
-        (fetch_jobicy, "Jobicy"),
-        (fetch_arbeitnow, "Arbeitnow"),
-        (fetch_adzuna, "Adzuna"),
-        (fetch_findwork, "FindWork"),
-        (fetch_cloudflare_worker, "CF Worker"),
-        (fetch_linkedin, "Linkedin"),
-        (fetch_linkedin1, "Linkedin1"),
+ #   for fn, name in [
+  #      (fetch_remotive, "Remotive"),
+   #     (fetch_jobicy, "Jobicy"),
+    #    (fetch_arbeitnow, "Arbeitnow"),
+     #   (fetch_adzuna, "Adzuna"),
+      #  (fetch_findwork, "FindWork"),
+  #      (fetch_cloudflare_worker, "CF Worker"),
+   #     (fetch_linkedin, "Linkedin"),
+    #    (fetch_linkedin1, "Linkedin1"),
     ]:
-        try:
-            jobs = fn()
-            source_counts[name] = len(jobs)
-            raw_jobs.extend(jobs)
-        except Exception as e:
-            log.error(f"{name} failed: {e}\n{traceback.format_exc()}")
-            source_counts[name] = 0
+  #      try:
+  #          jobs = fn()
+  #          source_counts[name] = len(jobs)
+  #          raw_jobs.extend(jobs)
+  #      except Exception as e:
+  #          log.error(f"{name} failed: {e}\n{traceback.format_exc()}")
+  #          source_counts[name] = 0
 
 
 
