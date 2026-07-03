@@ -542,7 +542,7 @@ def fetch_linkedin1() -> list:
     IandC_TERMS =  ["I&C junior engineer", "I&C senior engineer", "Instrument engineer", "control system engineer", "PLC engineer", "SCADA engineer", "Control engineer", "PLC programmer remote"]
     try:
         resp = requests.get("https://www.linkedin.com/jobs/remote-jobs/", timeout=15, headers={"User-Agent": "Mozilla/5.0"})
-              resp.raise_for_status()
+        resp.raise_for_status()
         results = []
         for j in resp.json().get("data", []):
             if not j.get("remote"):
