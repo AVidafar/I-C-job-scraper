@@ -120,12 +120,92 @@ BLACKLIST_KEYWORDS = [
 ]
 
 BOOST_KEYWORDS = {
-    "I&C": 20, "control": 18, "instrument": 15,
-    "junior": 18, "entry level": 15, "associate": 12,
-    "Instrument engineer": 12, "control engineer": 12, "I&C engineer": 10,
-    "hybrid": 10, "part-time": 8, "contract": 5,
-    "remote-first": 8, "async": 5, "flexible": 4,
-    
+    # Core I&C Titles
+    "Instrumentation": 30,
+    "Instrument": 28,
+    "Instrumentation Engineer": 30,
+    "Instrument Engineer": 28,
+    "Instrumentation & Control": 30,
+    "I&C": 30,
+    "I&C Engineer": 30,
+    "Control Engineer": 28,
+    "Control Systems Engineer": 28,
+    "Automation Engineer": 26,
+    "Process Control Engineer": 26,
+    "Electrical & Instrumentation": 24,
+    "E&I": 24,
+
+    # Control Systems
+    "SCADA": 26,
+    "PLC": 26,
+    "DCS": 26,
+    "RTU": 22,
+    "SIS": 22,
+    "ESD": 22,
+    "F&G": 18,
+    "HMI": 18,
+    "Telemetry": 18,
+
+    # Engineering Activities
+    "FEED": 24,
+    "Basic Engineering": 22,
+    "Detailed Engineering": 22,
+    "Engineering Design": 22,
+    "Commissioning": 24,
+    "Pre-commissioning": 22,
+    "Start-up": 20,
+    "FAT": 20,
+    "SAT": 20,
+    "Loop Check": 18,
+    "Troubleshooting": 18,
+    "Vendor": 16,
+    "Procurement": 14,
+
+    # Documentation
+    "Control Philosophy": 18,
+    "Cause & Effect": 18,
+    "Instrument Datasheet": 18,
+    "Instrument Index": 16,
+    "I/O List": 16,
+    "Loop Diagram": 16,
+    "Hook-up": 14,
+    "Cable Schedule": 14,
+
+    # Industries
+    "Oil & Gas": 24,
+    "Offshore": 22,
+    "Onshore": 18,
+    "Petrochemical": 20,
+    "Refinery": 20,
+    "Pipeline": 20,
+    "Gas Transmission": 18,
+    "Power Plant": 18,
+    "Combined Cycle": 16,
+    "Mining": 16,
+    "Mineral Processing": 16,
+    "Copper": 14,
+    "Iron Ore": 14,
+
+    # Standards
+    "ISA": 14,
+    "IEC": 14,
+    "HAZOP": 14,
+    "SIL": 12,
+
+    # Work Type
+    "Remote": 10,
+    "Hybrid": 10,
+    "WFH": 8,
+    "Flexible": 6,
+    "Contract": 6,
+    "Permanent": 6,
+
+    # Experience Levels
+    "Junior": 8,
+    "Mid-Level": 12,
+    "Senior": 18,
+    "Lead": 16,
+    "Principal": 14
 }
 
 _SKILL_PATTERNS   = {s: re.compile(r"\b" + re.escape(s) + r"\b", re.I) for s in MY_SKILLS}
