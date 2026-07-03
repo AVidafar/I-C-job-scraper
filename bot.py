@@ -70,6 +70,42 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
+
+
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s"
+)
+
+logger = logging.getLogger(__name__)
+
+
+def safe_fetch(source_name: str, fetch_function):
+    """
+    Execute a job source safely without stopping the whole bot.
+    """
+    try:
+        logger.info("Fetching jobs from %s ...", source_name)
+
+        jobs = fetch_function()
+
+        logger.info(
+            "%s completed successfully (%d jobs found).",
+            source_name,
+            len(jobs),
+        )
+
+        return jobs
+
+    except Exception:
+        logger.exception("%s failed.", source_name)
+        return []
+
+
+
+
 load_dotenv()
 
 TELEGRAM_TOKEN   = os.environ.get("TELEGRAM_BOT_TOKEN", "")
@@ -785,6 +821,30 @@ def main() -> None:
     sheets = get_sheets_client()
     ensure_sheet_headers(sheets)
 
+
+
+jobs = []
+
+sources = [
+    ("JSearch", fetch_jsearch),
+    ("Adzuna", fetch_adzuna),
+    ("Remotive", fetch_remotive),
+    ("Jobicy", fetch_jobicy),
+    ("ArbeitNow", fetch_arbeitnow),
+]
+
+for source_name, fetch_function in sources:
+    jobs.extend(
+        safe_fetch(
+            source_name,
+            fetch_function,
+        )
+    )
+  
+logger.info("Total collected jobs: %d", len(jobs))
+
+
+  
     raw_jobs = []
     source_counts = {}
 
@@ -807,6 +867,17 @@ def main() -> None:
             log.error(f"{name} failed: {e}\n{traceback.format_exc()}")
             source_counts[name] = 0
 
+
+
+for source_name, fetch_function in sources:
+    jobs.extend(
+        safe_fetch(
+            source_name,
+            fetch_function,
+        )
+    )
+
+  
     # ── JSearch (اختیاری) ────────────────────────────────────────────────────
     jsearch_total = 0
     for priority in sorted(JSEARCH_QUERIES.keys()):
