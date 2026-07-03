@@ -205,7 +205,7 @@ BOOST_KEYWORDS = {
     "Mid-Level": 12,
     "Senior": 18,
     "Lead": 16,
-    "Principal": 14
+    "Principal": 14,
 }
 
 _SKILL_PATTERNS   = {s: re.compile(r"\b" + re.escape(s) + r"\b", re.I) for s in MY_SKILLS}
@@ -351,10 +351,23 @@ def fetch_jobicy() -> list:
     return results
 
 def fetch_arbeitnow() -> list:
-    IandC_TERMS = ["I&C", "instrument", "control", "PLC", "SCADA", "instrumentation", "control valve"]
+    IandC_TERMS = [
+      "I&C", 
+      "instrument", 
+      "control", 
+      "PLC", 
+      "SCADA", 
+      "instrumentation", 
+      "control valve"
+    ]
     try:
-        resp = requests.get("https://arbeitnow.com/api/job-board-api", timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+        resp = requests.get(
+          "https://arbeitnow.com/api/job-board-api", 
+          timeout=15,
+          headers={"User-Agent": "Mozilla/5.0"},
+        )
         resp.raise_for_status()
+      
         results = []
         for j in resp.json().get("data", []):
             if not j.get("remote"):
