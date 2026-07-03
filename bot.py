@@ -858,7 +858,7 @@ logger.info("Total collected jobs: %d", len(jobs))
   #      (fetch_cloudflare_worker, "CF Worker"),
    #     (fetch_linkedin, "Linkedin"),
     #    (fetch_linkedin1, "Linkedin1"),
-    ]:
+  #  ]:
   #      try:
   #          jobs = fn()
   #          source_counts[name] = len(jobs)
