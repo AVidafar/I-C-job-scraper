@@ -354,7 +354,7 @@ def fetch_arbeitnow() -> list:
     IandC_TERMS = ["I&C", "instrument", "control", "PLC", "SCADA", "instrumentation", "control valve"]
     try:
         resp = requests.get("https://arbeitnow.com/api/job-board-api", timeout=15, headers={"User-Agent": "Mozilla/5.0"})
-              resp.raise_for_status()
+        resp.raise_for_status()
         results = []
         for j in resp.json().get("data", []):
             if not j.get("remote"):
