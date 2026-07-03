@@ -37,7 +37,6 @@ Cover Letter:
   ADZUNA_APP_ID        — اختیاری
   ADZUNA_API_KEY       — اختیاری
 """
-
 import html
 import json
 import logging
@@ -869,20 +868,20 @@ def main() -> None:
 
   
     # ── JSearch (اختیاری) ────────────────────────────────────────────────────
-        jsearch_total = 0
-        for priority in sorted(JSEARCH_QUERIES.keys()):
-            if priority == 3 and not _should_run_p3():
-                log.info("Skipping P3 JSearch queries (odd day)")
-                continue
-            for query in JSEARCH_QUERIES[priority]:
-                try:
-                    jobs = search_jsearch(query)
-                    jsearch_total += len(jobs)
-                    raw_jobs.extend(jobs)
-                except Exception as e:
-                    log.error(f"JSearch '{query}': {e}")
-                time.sleep(1.5)
-        source_counts["JSearch"] = jsearch_total
+    jsearch_total = 0
+    for priority in sorted(JSEARCH_QUERIES.keys()):
+        if priority == 3 and not _should_run_p3():
+            log.info("Skipping P3 JSearch queries (odd day)")
+            continue
+        for query in JSEARCH_QUERIES[priority]:
+             try:
+                jobs = search_jsearch(query)
+                jsearch_total += len(jobs)
+                raw_jobs.extend(jobs)
+            except Exception as e:
+                log.error(f"JSearch '{query}': {e}")
+            time.sleep(1.5)
+    source_counts["JSearch"] = jsearch_total
 
     # ── فیلتر + امتیازدهی ────────────────────────────────────────────────────
     seen_ids = set()
