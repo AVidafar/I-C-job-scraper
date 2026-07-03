@@ -822,7 +822,9 @@ def main() -> None:
     ensure_sheet_headers(sheets)
 
     jobs = []  # ← Now indented as part of main()
-    
+    raw_jobs = []
+    source_counts = {}
+  
     sources = [
         ("JSearch", fetch_jsearch),
         ("Adzuna", fetch_adzuna),
@@ -839,51 +841,48 @@ def main() -> None:
             )
         )
     
-    # ... continue with rest of the code through line 1003
-  
-logger.info("Total collected jobs: %d", len(jobs))
+  logger.info("Total collected jobs: %d", len(jobs))
 
 
   
-  #  raw_jobs = []
- #   source_counts = {}
+    #  raw_jobs = []
+     #   source_counts = {}
 
     # ── منابع رایگان ─────────────────────────────────────────────────────────
- #   for fn, name in [
-  #      (fetch_remotive, "Remotive"),
-   #     (fetch_jobicy, "Jobicy"),
-    #    (fetch_arbeitnow, "Arbeitnow"),
+     #   for fn, name in [
+    #      (fetch_remotive, "Remotive"),
+     #     (fetch_jobicy, "Jobicy"),
+      #    (fetch_arbeitnow, "Arbeitnow"),
      #   (fetch_adzuna, "Adzuna"),
       #  (fetch_findwork, "FindWork"),
-  #      (fetch_cloudflare_worker, "CF Worker"),
-   #     (fetch_linkedin, "Linkedin"),
-    #    (fetch_linkedin1, "Linkedin1"),
-  #  ]:
-  #      try:
-  #          jobs = fn()
-  #          source_counts[name] = len(jobs)
-  #          raw_jobs.extend(jobs)
-  #      except Exception as e:
-  #          log.error(f"{name} failed: {e}\n{traceback.format_exc()}")
-  #          source_counts[name] = 0
-
+      #      (fetch_cloudflare_worker, "CF Worker"),
+       #     (fetch_linkedin, "Linkedin"),
+        #    (fetch_linkedin1, "Linkedin1"),
+      #  ]:
+      #      try:
+        #          jobs = fn()
+      #          source_counts[name] = len(jobs)
+      #          raw_jobs.extend(jobs)
+      #      except Exception as e:
+        #          log.error(f"{name} failed: {e}\n{traceback.format_exc()}")
+        #          source_counts[name] = 0
 
   
     # ── JSearch (اختیاری) ────────────────────────────────────────────────────
-    jsearch_total = 0
-    for priority in sorted(JSEARCH_QUERIES.keys()):
-        if priority == 3 and not _should_run_p3():
-            log.info("Skipping P3 JSearch queries (odd day)")
-            continue
-        for query in JSEARCH_QUERIES[priority]:
-            try:
-                jobs = search_jsearch(query)
-                jsearch_total += len(jobs)
-                raw_jobs.extend(jobs)
-            except Exception as e:
-                log.error(f"JSearch '{query}': {e}")
-            time.sleep(1.5)
-    source_counts["JSearch"] = jsearch_total
+      jsearch_total = 0
+      for priority in sorted(JSEARCH_QUERIES.keys()):
+          if priority == 3 and not _should_run_p3():
+              log.info("Skipping P3 JSearch queries (odd day)")
+              continue
+          for query in JSEARCH_QUERIES[priority]:
+              try:
+                  jobs = search_jsearch(query)
+                  jsearch_total += len(jobs)
+                  raw_jobs.extend(jobs)
+              except Exception as e:
+                  log.error(f"JSearch '{query}': {e}")
+              time.sleep(1.5)
+      source_counts["JSearch"] = jsearch_total
 
     # ── فیلتر + امتیازدهی ────────────────────────────────────────────────────
     seen_ids = set()
