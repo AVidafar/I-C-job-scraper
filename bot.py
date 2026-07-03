@@ -821,25 +821,25 @@ def main() -> None:
     sheets = get_sheets_client()
     ensure_sheet_headers(sheets)
 
-
-
-jobs = []
-
-sources = [
-    ("JSearch", fetch_jsearch),
-    ("Adzuna", fetch_adzuna),
-    ("Remotive", fetch_remotive),
-    ("Jobicy", fetch_jobicy),
-    ("ArbeitNow", fetch_arbeitnow),
-]
-
-for source_name, fetch_function in sources:
-    jobs.extend(
-        safe_fetch(
-            source_name,
-            fetch_function,
+    jobs = []  # ← Now indented as part of main()
+    
+    sources = [
+        ("JSearch", fetch_jsearch),
+        ("Adzuna", fetch_adzuna),
+        ("Remotive", fetch_remotive),
+        ("Jobicy", fetch_jobicy),
+        ("ArbeitNow", fetch_arbeitnow),
+    ]
+    
+    for source_name, fetch_function in sources:
+        jobs.extend(
+            safe_fetch(
+                source_name,
+                fetch_function,
+            )
         )
-    )
+    
+    # ... continue with rest of the code through line 1003
   
 logger.info("Total collected jobs: %d", len(jobs))
 
