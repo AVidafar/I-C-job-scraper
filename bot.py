@@ -119,7 +119,7 @@ BLACKLIST_KEYWORDS = [
     "director", "head of", "vp of",
 ]
 
-BOOST_KEYWORDS = {
+BOOST_KEYWORDS = [
     # Core I&C Titles
     "Instrumentation": 30,
     "Instrument": 28,
@@ -206,7 +206,7 @@ BOOST_KEYWORDS = {
     "Senior": 18,
     "Lead": 16,
     "Principal": 14
-}
+]
 
 _SKILL_PATTERNS   = {s: re.compile(r"\b" + re.escape(s) + r"\b", re.I) for s in MY_SKILLS}
 _BOOST_PATTERNS   = {kw: re.compile(r"\b" + re.escape(kw) + r"\b", re.I) for kw in BOOST_KEYWORDS}
