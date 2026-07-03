@@ -868,15 +868,6 @@ logger.info("Total collected jobs: %d", len(jobs))
   #          source_counts[name] = 0
 
 
-
-for source_name, fetch_function in sources:
-    jobs.extend(
-        safe_fetch(
-            source_name,
-            fetch_function,
-        )
-    )
-
   
     # ── JSearch (اختیاری) ────────────────────────────────────────────────────
     jsearch_total = 0
