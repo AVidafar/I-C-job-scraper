@@ -878,7 +878,7 @@ def main() -> None:
                 jobs = search_jsearch(query)
                 jsearch_total += len(jobs)
                 raw_jobs.extend(jobs)
-            except Exception as e:
+             except Exception as e:
                 log.error(f"JSearch '{query}': {e}")
             time.sleep(1.5)
     source_counts["JSearch"] = jsearch_total
