@@ -845,6 +845,39 @@ def batch_append_to_sheet(client, rows: list) -> None:
     except Exception as e:
         log.error(f"Sheet batch append error: {e}")
 
+#------خواندن همه URLهای ارسال شده
+def load_sent_jobs(sheet):
+    urls = set()
+
+    records = sheet.get_all_records()
+
+    for row in records:
+        url = row.get("URL")
+
+        if url:
+            urls.add(url.strip())
+
+    logger.info("Loaded %d sent jobs", len(urls))
+
+    return urls
+
+#----ذخیره Job جدید
+from datetime import datetime
+
+def save_sent_job(sheet, job):
+
+    sheet.append_row(
+        [
+            job.get("url", ""),
+            datetime.now().strftime("%Y-%m-%d %H:%M"),
+            job.get("company", ""),
+            job.get("title", "")
+        ]
+    )
+
+
+
+
 # ── Remove duplicate jobs ────────────────────────────────────────────────
 
 def deduplicate_jobs(jobs: list) -> list:
@@ -887,7 +920,11 @@ def main() -> None:
     seen_jobs = load_seen_jobs()
     sheets = get_sheets_client()
     ensure_sheet_headers(sheets)
+#---added abbas
+    history_sheet = gc.open_by_key(GSHEET_ID).worksheet("SentJobs")
 
+    sent_urls = load_sent_jobs(history_sheet)
+  
     jobs = []  # ← Now indented as part of main()
     raw_jobs = []
     source_counts = {}
