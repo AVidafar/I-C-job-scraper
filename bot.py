@@ -1027,11 +1027,12 @@ def main() -> None:
     for job in raw_jobs:
         try:
             jid = build_job_id(job)
-            title_key = "|".join([
-              (job.get("title") or "").lower().strip(),
-              (job.get("company") or "").lower().strip(),
-              (job.get("location") or "").lower().strip(),
-              ])
+  
+            title_key = (
+              f"{(job.get('title') or '').lower().strip()}|"
+              f"{(job.get('company') or '').lower().strip()}"
+              f"{(job.get('location') or '').lower().strip()}"
+              )
             if not jid:
                 continue
             if jid in seen_jobs or jid in seen_ids:
