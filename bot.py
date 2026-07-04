@@ -874,13 +874,13 @@ def main() -> None:
             log.info("Skipping P3 JSearch queries (odd day)")
             continue
         for query in JSEARCH_QUERIES[priority]:
-        try:
+            try:
                 jobs = search_jsearch(query)
                 jsearch_total += len(jobs)
                 raw_jobs.extend(jobs)
-        except Exception as e:
+            except Exception as e:
                 log.error(f"JSearch '{query}': {e}")
-        time.sleep(1.5)
+            time.sleep(1.5)
     source_counts["JSearch"] = jsearch_total
   
     # ── فیلتر + امتیازدهی ────────────────────────────────────────────────────
