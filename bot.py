@@ -825,7 +825,7 @@ def main() -> None:
     source_counts = {}
   
     sources = [
-        ("JSearch", fetch_jsearch),
+        ("JSearch", search_jsearch),
         ("Adzuna", fetch_adzuna),
         ("Remotive", fetch_remotive),
         ("Jobicy", fetch_jobicy),
