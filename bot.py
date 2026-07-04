@@ -890,7 +890,7 @@ def ensure_sheet_headers(client) -> None:
                 1,
             )
 
-  except Exception:
+     except Exception:
         log.exception("Sheet header error")
 
 
