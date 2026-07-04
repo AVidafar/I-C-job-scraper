@@ -45,6 +45,7 @@ import re
 import time
 import traceback
 import urllib.parse
+import hashlib
 from collections import OrderedDict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -266,6 +267,35 @@ def load_prompt_template() -> str:
     except Exception as e:
         log.warning(f"Could not load prompt.txt: {e}")
     return "Write a short, professional cover letter for the '{title}' position at '{company}'. Focus on my technical I&C skills. Job link: {url}"
+
+
+import hashlib
+
+def build_job_id(job: dict) -> str:
+    """
+    Build a stable unique ID for a job.
+    """
+
+    # اگر منبع شناسه معتبر داده، همان را استفاده کن
+    if job.get("id"):
+        return str(job["id"]).strip()
+
+    # اگر URL وجود دارد
+    if job.get("url"):
+        return hashlib.sha256(
+            job["url"].strip().lower().encode()
+        ).hexdigest()
+
+    # در غیر این صورت از اطلاعات شغل Fingerprint بساز
+    text = "|".join([
+        (job.get("title") or "").strip().lower(),
+        (job.get("company") or "").strip().lower(),
+        (job.get("location") or "").strip().lower(),
+    ])
+
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
 
 # ── Seen Jobs Cache ─────────────────────────────────────────────────────────
 
@@ -996,9 +1026,12 @@ def main() -> None:
 
     for job in raw_jobs:
         try:
-            jid = job.get("id") or job.get("url") or ""
-            title_key = f"{(job.get('title') or '').lower().strip()}|{(job.get('company') or '').lower().strip()}"
-
+            jid = build_job_id(job)
+            title_key = "|".join([
+              (job.get("title") or "").lower().strip(),
+              (job.get("company") or "").lower().strip(),
+              (job.get("location") or "").lower().strip(),
+]
             if not jid:
                 continue
             if jid in seen_jobs or jid in seen_ids:
