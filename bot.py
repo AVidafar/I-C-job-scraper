@@ -970,10 +970,51 @@ def deduplicate_jobs(jobs: list) -> list:
     return unique
 
 # ── Greenhouse Companies ─────────────────────────────────────
+def fetch_greenhouse() -> list:
+    """
+    Fetch jobs from Greenhouse job boards.
+    """
+    jobs = []
 
-GREENHOUSE_COMPANIES = [
-    "siemens",
-]
+    for company in GREENHOUSE_COMPANIES:
+
+        url = f"https://boards-api.greenhouse.io/v1/boards/{company}/jobs"
+
+        try:
+            resp = requests.get(
+                url,
+                timeout=20,
+                headers={"User-Agent": "Mozilla/5.0"}
+            )
+
+            if resp.status_code != 200:
+                continue
+
+            data = resp.json()
+
+            for item in data.get("jobs", []):
+
+                jobs.append({
+                    "id": f"greenhouse-{item.get('id')}",
+                    "title": item.get("title", ""),
+                    "company": company.title(),
+                    "location": (
+                        item.get("location", {}) or {}
+                    ).get("name", ""),
+                    "url": item.get("absolute_url", ""),
+                    "description": "",
+                    "salary": "",
+                    "remote": False,
+                    "source": "Greenhouse",
+                    "posted_at": ""
+                })
+
+        except Exception as e:
+            log.error(f"Greenhouse ({company}) error: {e}")
+
+    log.info(f"Greenhouse: {len(jobs)} jobs")
+
+    return jobs
 
 # ── Main ─────────────────────────────────────────────────────────────────────
 
