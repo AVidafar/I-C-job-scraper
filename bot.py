@@ -969,6 +969,11 @@ def deduplicate_jobs(jobs: list) -> list:
 
     return unique
 
+# ── Greenhouse Companies ─────────────────────────────────────
+
+GREENHOUSE_COMPANIES = [
+    "siemens",
+]
 
 # ── Main ─────────────────────────────────────────────────────────────────────
 
