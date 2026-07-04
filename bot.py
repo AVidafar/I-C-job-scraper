@@ -854,16 +854,45 @@ def get_sheets_client():
 def ensure_sheet_headers(client) -> None:
     if not client:
         return
+
     try:
-        sheet = client.open_by_key(GSHEET_ID).worksheet(GSHEET_SHEET_NAME)
+        workbook = client.open_by_key(GSHEET_ID)
+
+        try:
+            sheet = workbook.worksheet(GSHEET_SHEET_NAME)
+        except Exception:
+            log.warning(
+                "Worksheet '%s' not found. Creating it...",
+                GSHEET_SHEET_NAME,
+            )
+
+            sheet = workbook.add_worksheet(
+                title=GSHEET_SHEET_NAME,
+                rows=1000,
+                cols=20,
+            )
+
         if not sheet.row_values(1):
             sheet.insert_row(
-                ["Job Title", "Company", "Source", "Apply Link", "Posted",
-                 "Salary", "Fit Score", "Location", "Saved At (UTC)", "Status", "Cover Letter Link"],
+                [
+                    "Job Title",
+                    "Company",
+                    "Source",
+                    "Apply Link",
+                    "Posted",
+                    "Salary",
+                    "Fit Score",
+                    "Location",
+                    "Saved At (UTC)",
+                    "Status",
+                    "Cover Letter Link",
+                ],
                 1,
             )
-    except Exception as e:
-        log.error(f"Sheet header error: {e}")
+
+      except Exception:
+        log.exception("Sheet header error")
+
 
 def batch_append_to_sheet(client, rows: list) -> None:
     if not client or not rows:
@@ -876,34 +905,34 @@ def batch_append_to_sheet(client, rows: list) -> None:
         log.error(f"Sheet batch append error: {e}")
 
 #------خواندن همه URLهای ارسال شده
-def load_sent_jobs(sheet):
-    urls = set()
+#def load_sent_jobs(sheet):
+ #   urls = set()
 
-    records = sheet.get_all_records()
+  #  records = sheet.get_all_records()
 
-    for row in records:
-        url = row.get("URL")
+  #  for row in records:
+   #     url = row.get("URL")
 
-        if url:
-            urls.add(url.strip())
+    #    if url:
+     #       urls.add(url.strip())
 
-    logger.info("Loaded %d sent jobs", len(urls))
+    #logger.info("Loaded %d sent jobs", len(urls))
 
-    return urls
+   # return urls
 
 #----ذخیره Job جدید
-from datetime import datetime
+#from datetime import datetime
 
-def save_sent_job(sheet, job):
+#def save_sent_job(sheet, job):
 
-    sheet.append_row(
-        [
-            job.get("url", ""),
-            datetime.now().strftime("%Y-%m-%d %H:%M"),
-            job.get("company", ""),
-            job.get("title", "")
-        ]
-    )
+ #   sheet.append_row(
+   #     [
+  #          job.get("url", ""),
+    #        datetime.now().strftime("%Y-%m-%d %H:%M"),
+     #       job.get("company", ""),
+      #      job.get("title", "")
+       # ]
+    #)
 
 
 
@@ -951,9 +980,10 @@ def main() -> None:
     sheets = get_sheets_client()
     ensure_sheet_headers(sheets)
 #---added abbas
-    history_sheet = gc.open_by_key(GSHEET_ID).worksheet("SentJobs")
+    #history_sheet = gc.open_by_key(GSHEET_ID).worksheet("SentJobs")
+    GSHEET_SHEET_NAME = "Jobs"
 
-    sent_urls = load_sent_jobs(history_sheet)
+    #sent_urls = load_sent_jobs(history_sheet)
   
     jobs = []  # ← Now indented as part of main()
     raw_jobs = []
