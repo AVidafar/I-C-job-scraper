@@ -1031,7 +1031,7 @@ def main() -> None:
               (job.get("title") or "").lower().strip(),
               (job.get("company") or "").lower().strip(),
               (job.get("location") or "").lower().strip(),
-              ]
+              ])
             if not jid:
                 continue
             if jid in seen_jobs or jid in seen_ids:
