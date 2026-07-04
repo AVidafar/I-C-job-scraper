@@ -605,6 +605,41 @@ def fetch_linkedin1() -> list:
         log.error(f"Linkedin1 error: {e}")
         return []
 
+# ── Remove duplicate jobs ────────────────────────────────────────────────
+
+def deduplicate_jobs(jobs: list) -> list:
+    """
+    Remove duplicate jobs collected from different sources.
+    """
+
+    seen = set()
+    unique = []
+
+    for job in jobs:
+
+        title = (job.get("title") or "").strip().lower()
+        company = (job.get("company") or "").strip().lower()
+        location = (job.get("location") or "").strip().lower()
+
+        key = (title, company, location)
+
+        if key in seen:
+            continue
+
+        seen.add(key)
+        unique.append(job)
+
+    logger.info(
+        "Duplicate removal: %d → %d jobs",
+        len(jobs),
+        len(unique),
+    )
+
+    return unique
+
+
+
+
 # ── JSearch API (اختیاری) ───────────────────────────────────────────────────
 
 def _should_run_p3() -> bool:
@@ -810,6 +845,39 @@ def batch_append_to_sheet(client, rows: list) -> None:
     except Exception as e:
         log.error(f"Sheet batch append error: {e}")
 
+# ── Remove duplicate jobs ────────────────────────────────────────────────
+
+def deduplicate_jobs(jobs: list) -> list:
+    """
+    Remove duplicate jobs collected from different sources.
+    """
+
+    seen = set()
+    unique = []
+
+    for job in jobs:
+
+        title = (job.get("title") or "").strip().lower()
+        company = (job.get("company") or "").strip().lower()
+        location = (job.get("location") or "").strip().lower()
+
+        key = (title, company, location)
+
+        if key in seen:
+            continue
+
+        seen.add(key)
+        unique.append(job)
+
+    logger.info(
+        "Duplicate removal: %d → %d jobs",
+        len(jobs),
+        len(unique),
+    )
+
+    return unique
+
+
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -839,7 +907,7 @@ def main() -> None:
                 fetch_function,
             )
         )
-    
+    jobs = deduplicate_jobs(jobs)
     logger.info("Total collected jobs: %d", len(jobs))
 
 
