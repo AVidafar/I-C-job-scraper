@@ -1060,21 +1060,16 @@ def main() -> None:
     ]
 
     for source_name, fetch_function in sources:
-
         source_jobs = safe_fetch(
             source_name,
             fetch_function,
         )
-
-    source_counts[source_name] = len(source_jobs)
-
-    raw_jobs.extend(source_jobs)
+        source_counts[source_name] = len(source_jobs)
+        raw_jobs.extend(source_jobs)
 
     raw_jobs = deduplicate_jobs(raw_jobs)
    # logger.info("Greenhouse included in total jobs.")
     log.info("Collected %d jobs", len(raw_jobs))
-
-
   
     #  raw_jobs = []
      #   source_counts = {}
@@ -1104,20 +1099,16 @@ def main() -> None:
   
     # ── فیلتر + امتیازدهی ────────────────────────────────────────────────────
     seen_ids = set()
-
     stats = {
         "blacklisted": 0,
         "seen": 0,
         "old": 0,
         "low_score": 0,
-        }
+    }
+    qualified = []
 
-      qualified = []
-
-      for job in raw_jobs:
-
+    for job in raw_jobs:
         try:
-
             jid = build_job_id(job)
 
             if jid in seen_jobs or jid in seen_ids:
@@ -1128,7 +1119,6 @@ def main() -> None:
             seen_jobs[jid] = True
 
             blacklisted, _ = is_blacklisted(job)
-
             if blacklisted:
                 stats["blacklisted"] += 1
                 continue
@@ -1148,7 +1138,7 @@ def main() -> None:
         except Exception:
             log.exception("Processing error")
   
-    
+        # Sort after collecting all qualified jobs
         qualified.sort(key=lambda x: x[1], reverse=True)
 
         log.info(
@@ -1157,6 +1147,7 @@ def main() -> None:
         )
 
     # ── ارسال به تلگرام ──────────────────────────────────────────────────────
+        # Prepare and send report
         active_sources = {k: v for k, v in source_counts.items() if v > 0}
         sources_line = " | ".join(f"{k}: {v}" for k, v in active_sources.items())
 
@@ -1171,7 +1162,7 @@ def main() -> None:
                 f"🕐 {stats['old']} old"
             )
             save_seen_jobs(seen_jobs)
-        return
+            return
 
         send_telegram(
             f"🤖 <b>New I&C Jobs</b>\n"
