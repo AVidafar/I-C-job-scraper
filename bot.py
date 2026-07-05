@@ -349,6 +349,35 @@ IC_KEYWORDS = [
     "foxboro",
     "field instrumentation",
     "E&I engineer",
+    "RTU",
+    "instrument",
+    "control system",
+    "automation engineer",
+    "industrial automation",
+    "electrical and instrumentation",
+    "i&c",
+    "plc",
+    "scada",
+    "dcs",
+    "pcs7",
+    "tia portal",
+    "wincc",
+    "step7",
+    "siemens",
+    "abb",
+    "emerson",
+    "yokogawa",
+    "honeywell",
+    "foxboro",
+    "schneider",
+    "rockwell",
+    "allen bradley",
+    "commissioning",
+    "field instrumentation",
+    "loop check",
+    "functional safety",
+    "esd",
+    "sis",
 ]
 
 NON_IC_KEYWORDS = [
@@ -364,35 +393,80 @@ NON_IC_KEYWORDS = [
     "react",
     "python developer",
     "java developer",
+    "software engineer",
+    "software developer",
+    "mobile developer",
+    "node.js",
+    "javascript",
+    "typescript",
+    "golang",
+    "machine learning",
+    "artificial intelligence",
+    "ai engineer",
+    "data scientist",
+    "data engineer",
+    "cyber security",
+    "product manager",
+    "sales",
+    "marketing",
+    "recruiter",
+    "hr",
 ]
 
+# ── Relevant I&C job ───────────────────────────────────────────────────────────────
 def is_relevant_ic_job(job: dict) -> bool:
-    text = f"""
-    {(job.get('title') or '').lower()}
-    {(job.get('description') or '').lower()}
-    {(job.get('company') or '').lower()}
-    """
 
-    # Check if it has non-IC keywords (exclude those jobs)
+    text = " ".join([
+        (job.get("title") or "").lower(),
+        (job.get("description") or "").lower(),
+        (job.get("company") or "").lower(),
+    ])
+
+    # حذف مشاغل نرم‌افزاری
     if any(word in text for word in NON_IC_KEYWORDS):
         return False
-      
-    # Check if it has IC keywords (include those jobs)
-    return any(keyword in text for keyword in IC_KEYWORDS)
 
+    # باید حداقل یک کلمه تخصصی I&C داشته باشد
+    return any(word in text for word in IC_KEYWORDS)
 
 # ── Fit Score ───────────────────────────────────────────────────────────────
 def calculate_fit_score(job: dict) -> tuple:
     score = 0
+    EXPERT_KEYWORDS = {
+        "feed": 10,
+        "detail engineering": 8,
+        "oil & gas": 12,
+        "gas compressor": 15,
+        "commissioning": 10,
+        "dcs": 8,
+        "plc": 6,
+        "scada": 6,
+        "instrumentation": 8,
+        "control system": 8,
+        "functional safety": 8,
+        "sis": 8,
+    }
+    #Blacklist برای شرکت‌هایی که علاقه‌ای به آن‌ها ندارید
+    BLACKLIST_COMPANIES = [
+        "tiktok",
+        "bytedance",
+    ]
+  
     matched_skills = []
     title    = (job.get("title") or "").lower()
     desc     = (job.get("description") or "").lower()
     combined = f"{title} {desc}"
-
-    for kw, pts in BOOST_KEYWORDS.items():
-        if _BOOST_PATTERNS[kw].search(combined):
+  
+    company = (job.get("company") or "").lower()
+    if any(c in company for c in BLACKLIST_COMPANIES):
+        continue
+  
+    for keyword, pts in EXPERT_KEYWORDS.items():
+        if keyword in combined:
             score += pts
 
+
+  
     for skill in MY_SKILLS:
         if _SKILL_PATTERNS[skill].search(combined):
             matched_skills.append(skill)
