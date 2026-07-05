@@ -1470,8 +1470,8 @@ def main() -> None:
             fetch_function,
         )
         #jobs = safe_fetch(source_name, fetch_function)
-        source_counts[source_name] = len(jobs)
-        raw_jobs.extend(jobs)
+        source_counts[source_name] = len(source_jobs)
+        raw_jobs.extend(source_jobs)
     
     raw_jobs = deduplicate_jobs(raw_jobs)
    # log.info("Greenhouse included in total jobs.")
@@ -1562,73 +1562,74 @@ def main() -> None:
         f"Seen: {stats['seen']} | Old: {stats['old']} | Low: {stats['low_score']}"
      )
 
-    # ── ارسال به تلگرام ──────────────────────────────────────────────────────
-        # Prepare and send report
-        active_sources = {k: v for k, v in source_counts.items() if v > 0}
-        sources_line = " | ".join(f"{k}: {v}" for k, v in active_sources.items())
+    # ── ارسال به تلگرام ──────────────────────────────────────────────────
+    # Prepare and send report
+    active_sources = {k: v for k, v in source_counts.items() if v > 0}
+    sources_line = " | ".join(f"{k}: {v}" for k, v in active_sources.items())
 
-        if not qualified:
-            send_telegram(
-                f"🔍 <b>Daily Report</b>\n📅 {now}\n\n"
-                f"No qualified jobs found.\n\n"
-                f"📌 {sources_line or 'No sources'}\n"
-                f"⛔ {stats['blacklisted']} filtered | "
-                f"📉 {stats['low_score']} low score | "
-                f"🔁 {stats['seen']} duplicates | "
-                f"🕐 {stats['old']} old"
-            )
-            save_seen_jobs(seen_jobs)
-            return
-
+    if not qualified:
         send_telegram(
-            f"🤖 <b>New I&C Jobs</b>\n"
-            f"📅 {now}\n\n"
-            f"✅ <b>{len(qualified)}</b> jobs (sorted by fit)\n"
+            f"🔍 <b>Daily Report</b>\n📅 {now}\n\n"
+            f"No qualified jobs found.\n\n"
+            f"📌 {sources_line or 'No sources'}\n"
             f"⛔ {stats['blacklisted']} filtered | "
-            f"📉 {stats['low_score']} low | "
-            f"🔁 {stats['seen']} dupes\n\n"
-            f"📌 {sources_line}\n"
-            f"🤖 ChatGPT Cover Letter: ON\n"
-            f"➖➖➖➖➖➖➖➖"
+            f"📉 {stats['low_score']} low score | "
+            f"🔁 {stats['seen']} duplicates | "
+            f"🕐 {stats['old']} old"
         )
-        time.sleep(1.5)
-
-        sent = 0
-        sheet_rows = []
-
-        for job, score, skills in qualified[:MAX_JOBS_PER_RUN]:
-            try:
-                buttons = build_job_buttons(job)
-              
-                # resume_score, resume_matches = calculate_resume_match(job)
-                overall_score, overall_matches = calculate_overall_match(job)
-
-                msg = format_job(
-                    job,
-                    score,
-                    skills,
-                    resume_score,
-                    resume_matches,
-                )
-
-                if send_telegram(msg, reply_markup=buttons if buttons else None):
-                    sent += 1
-                    sheet_rows.append([
-                        job.get("title", ""), job.get("company", ""),
-                        job.get("source", ""), job.get("url", ""),
-                        job.get("posted_at", ""), job.get("salary", ""),
-                        score, job.get("location", ""),
-                        datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M"),
-                        "New", "ChatGPT URL"
-                    ])
-
-                time.sleep(1.5)
-            except Exception as e:
-                log.error(f"Send error: {e}")
-
-        batch_append_to_sheet(sheets, sheet_rows)
         save_seen_jobs(seen_jobs)
-        log.info(f"=== Done. Sent {sent}/{len(qualified)} ===")
+        return
+
+    send_telegram(
+        f"🤖 <b>New I&C Jobs</b>\n"
+        f"📅 {now}\n\n"
+        f"✅ <b>{len(qualified)}</b> jobs (sorted by fit)\n"
+        f"⛔ {stats['blacklisted']} filtered | "
+        f"📉 {stats['low_score']} low | "
+        f"🔁 {stats['seen']} dupes\n\n"
+        f"📌 {sources_line}\n"
+        f"🤖 ChatGPT Cover Letter: ON\n"
+        f"➖➖➖➖➖➖➖➖"
+    )
+    time.sleep(1.5)
+
+    sent = 0
+    sheet_rows = []
+
+    for job, score, skills in qualified[:MAX_JOBS_PER_RUN]:
+        try:
+            buttons = build_job_buttons(job)
+
+            # get overall match details (use as resume match)
+            overall_score, overall_matches = calculate_overall_match(job)
+            resume_score, resume_matches = overall_score, overall_matches
+
+            msg = format_job(
+                job,
+                score,
+                skills,
+                resume_score,
+                resume_matches,
+            )
+
+            if send_telegram(msg, reply_markup=buttons if buttons else None):
+                sent += 1
+                sheet_rows.append([
+                    job.get("title", ""), job.get("company", ""),
+                    job.get("source", ""), job.get("url", ""),
+                    job.get("posted_at", ""), job.get("salary", ""),
+                    score, job.get("location", ""),
+                    datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M"),
+                    "New", "ChatGPT URL"
+                ])
+
+            time.sleep(1.5)
+        except Exception as e:
+            log.error(f"Send error: {e}")
+
+    batch_append_to_sheet(sheets, sheet_rows)
+    save_seen_jobs(seen_jobs)
+    log.info(f"=== Done. Sent {sent}/{len(qualified)} ===")
 
 if __name__ == "__main__":
     main()
