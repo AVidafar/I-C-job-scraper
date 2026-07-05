@@ -37,6 +37,7 @@ Cover Letter:
   ADZUNA_APP_ID        — اختیاری
   ADZUNA_API_KEY       — اختیاری
 """
+import hashlib
 import html
 import json
 import logging
@@ -45,7 +46,6 @@ import re
 import time
 import traceback
 import urllib.parse
-import hashlib
 from collections import OrderedDict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -70,28 +70,16 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-
-
-import logging
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s"
-)
-
-logger = logging.getLogger(__name__)
-
-
 def safe_fetch(source_name: str, fetch_function):
     """
     Execute a job source safely without stopping the whole bot.
     """
     try:
-        logger.info("Fetching jobs from %s ...", source_name)
+        log.info("Fetching jobs from %s ...", source_name)
 
         jobs = fetch_function()
 
-        logger.info(
+        log.info(
             "%s completed successfully (%d jobs found).",
             source_name,
             len(jobs),
@@ -100,7 +88,7 @@ def safe_fetch(source_name: str, fetch_function):
         return jobs
 
     except Exception:
-        logger.exception("%s failed.", source_name)
+        log.exception("%s failed.", source_name)
         return []
 
 
@@ -675,7 +663,7 @@ def deduplicate_jobs(jobs: list) -> list:
         seen.add(key)
         unique.append(job)
 
-    logger.info(
+    log.info(
         "Duplicate removal: %d → %d jobs",
         len(jobs),
         len(unique),
@@ -932,7 +920,7 @@ def batch_append_to_sheet(client, rows: list) -> None:
     #    if url:
      #       urls.add(url.strip())
 
-    #logger.info("Loaded %d sent jobs", len(urls))
+    #log.info("Loaded %d sent jobs", len(urls))
 
    # return urls
 
@@ -977,7 +965,7 @@ def deduplicate_jobs(jobs: list) -> list:
         seen.add(key)
         unique.append(job)
 
-    logger.info(
+    info(
         "Duplicate removal: %d → %d jobs",
         len(jobs),
         len(unique),
@@ -1068,7 +1056,7 @@ def main() -> None:
         raw_jobs.extend(source_jobs)
 
     raw_jobs = deduplicate_jobs(raw_jobs)
-   # logger.info("Greenhouse included in total jobs.")
+   # log.info("Greenhouse included in total jobs.")
     log.info("Collected %d jobs", len(raw_jobs))
   
     #  raw_jobs = []
