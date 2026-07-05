@@ -1516,6 +1516,12 @@ def main() -> None:
     for job in raw_jobs:
         try:
             jid = build_job_id(job)
+            
+            if not is_relevant_ic_job(job):
+                log.info("Rejected: %s", job.get("title"))
+                continue
+                log.info("Accepted: %s", job.get("title"))
+            
             if not is_relevant_ic_job(job):
                 continue
             if jid in seen_jobs or jid in seen_ids:
