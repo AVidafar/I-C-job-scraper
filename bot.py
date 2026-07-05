@@ -1463,7 +1463,8 @@ def main() -> None:
         ("ArbeitNow", fetch_arbeitnow),
         ("Greenhouse", fetch_greenhouse),
     ]
-
+    relevant_jobs = 0 #new
+    
     for source_name, fetch_function in sources:
         source_jobs = safe_fetch(
             source_name,
@@ -1472,11 +1473,17 @@ def main() -> None:
         #jobs = safe_fetch(source_name, fetch_function)
         source_counts[source_name] = len(source_jobs)
         raw_jobs.extend(source_jobs)
+
+        if not is_relevant_ic_job(job):
+            continue
+
+        relevant_jobs += 1
     
     raw_jobs = deduplicate_jobs(raw_jobs)
    # log.info("Greenhouse included in total jobs.")
     log.info("Collected %d jobs", len(raw_jobs))
-  
+    log.info("Relevant I&C jobs: %d", relevant_jobs)
+
     #  raw_jobs = []
      #   source_counts = {}
 
@@ -1543,6 +1550,11 @@ def main() -> None:
             score, skills = calculate_fit_score(job)
             #resume_score, resume_matches = calculate_resume_match(job)
             overall_score, overall_matches = calculate_overall_match(job)
+            log.info(
+                "Qualified Candidate -> %s | Score=%d",
+                job.get("title"),
+                score,
+            )
 
             if score < MIN_FIT_SCORE:
                 stats["low_score"] += 1
@@ -1550,6 +1562,7 @@ def main() -> None:
 
             #qualified.append((job, score, skills))
             qualified.append((job, overall_score, overall_matches))
+            log.info("Added to qualified: %s", job.get("title"))
 
         except Exception:
             log.exception("Processing error")
