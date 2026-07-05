@@ -1524,17 +1524,29 @@ def main() -> None:
     qualified = []
 
     for job in raw_jobs:
+
+        debug = {
+            "total": len(raw_jobs),
+            "relevant": 0,
+            "seen": 0,
+            "blacklisted": 0,
+            "old": 0,
+            "low_score": 0,
+            "qualified": 0,
+        }
         try:
             jid = build_job_id(job)
             
             if not is_relevant_ic_job(job):
                 log.info("Rejected: %s", job.get("title"))
                 continue
+                debug["relevant"] += 1
                 
             log.info("Accepted: %s", job.get("title"))
 
 
             if jid in seen_jobs or jid in seen_ids:
+                debug["seen"] += 1
                 stats["seen"] += 1
                 continue
 
@@ -1543,10 +1555,12 @@ def main() -> None:
 
             blacklisted, _ = is_blacklisted(job)
             if blacklisted:
+                debug["blacklisted"] += 1
                 stats["blacklisted"] += 1
                 continue
 
             if is_too_old(job):
+                debug["old"] += 1
                 stats["old"] += 1
                 continue
 
@@ -1560,11 +1574,13 @@ def main() -> None:
             )
 
             if score < MIN_FIT_SCORE:
+                debug["low_score"] += 1
                 stats["low_score"] += 1
                 continue
 
             #qualified.append((job, score, skills))
             qualified.append((job, overall_score, overall_matches))
+            debug["qualified"] += 1
             log.info("Added to qualified: %s", job.get("title"))
 
         except Exception:
@@ -1577,7 +1593,18 @@ def main() -> None:
         f"Qualified: {len(qualified)} | BL: {stats['blacklisted']} | "
         f"Seen: {stats['seen']} | Old: {stats['old']} | Low: {stats['low_score']}"
      )
-
+    #جدید
+    log.info("=" * 60)
+    log.info("DEBUG SUMMARY")
+    log.info("Total jobs      : %d", debug["total"])
+    log.info("Relevant I&C    : %d", debug["relevant"])
+    log.info("Seen            : %d", debug["seen"])
+    log.info("Blacklisted     : %d", debug["blacklisted"])
+    log.info("Too old         : %d", debug["old"])
+    log.info("Low score       : %d", debug["low_score"])
+    log.info("Qualified       : %d", debug["qualified"])
+    log.info("=" * 60)
+    
     # ── ارسال به تلگرام ──────────────────────────────────────────────────
     # Prepare and send report
     active_sources = {k: v for k, v in source_counts.items() if v > 0}
