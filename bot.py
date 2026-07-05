@@ -1466,10 +1466,10 @@ def main() -> None:
     relevant_jobs = 0 #new
     
    for source_name, fetch_function in sources:
-    source_jobs = safe_fetch(
+        source_jobs = safe_fetch(
         source_name,
         fetch_function,
-    )
+        )
     source_counts[source_name] = len(source_jobs)
     raw_jobs.extend(source_jobs)
 
