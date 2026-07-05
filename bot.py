@@ -1112,9 +1112,9 @@ def main() -> None:
         "low_score": 0,
         }
 
-qualified = []
+  qualified = []
 
-for job in raw_jobs:
+  for job in raw_jobs:
 
     try:
 
@@ -1171,7 +1171,7 @@ for job in raw_jobs:
             f"🕐 {stats['old']} old"
         )
         save_seen_jobs(seen_jobs)
-        return
+    return
 
     send_telegram(
         f"🤖 <b>New I&C Jobs</b>\n"
