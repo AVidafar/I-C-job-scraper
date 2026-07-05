@@ -1031,10 +1031,9 @@ def main() -> None:
 
     #sent_urls = load_sent_jobs(history_sheet)
   
-    jobs = []  # ← Now indented as part of main()
     raw_jobs = []
     source_counts = {}
-  
+
    sources = [
     ("JSearch", search_jsearch),
     ("Adzuna", fetch_adzuna),
@@ -1043,20 +1042,21 @@ def main() -> None:
     ("ArbeitNow", fetch_arbeitnow),
     ("Greenhouse", fetch_greenhouse),
     ]
-    
+
     for source_name, fetch_function in sources:
-        jobs.extend(
-            safe_fetch(
-                source_name,
-                fetch_function,
-            )
+
+        source_jobs = safe_fetch(
+            source_name,
+            fetch_function,
         )
-    jobs = deduplicate_jobs(jobs)
-    raw_jobs = jobs.copy()
 
-    logger.info("Greenhouse included in total jobs.")
-    logger.info("Total collected jobs: %d", len(jobs))
+    source_counts[source_name] = len(source_jobs)
 
+    raw_jobs.extend(source_jobs)
+
+    raw_jobs = deduplicate_jobs(raw_jobs)
+   # logger.info("Greenhouse included in total jobs.")
+    log.info("Collected %d jobs", len(raw_jobs))
 
 
   
@@ -1084,20 +1084,7 @@ def main() -> None:
 
   
     # ── JSearch (اختیاری) ────────────────────────────────────────────────────
-    #jsearch_total = 0
-    #for priority in sorted(JSEARCH_QUERIES.keys()):
-        #if priority == 3 and not _should_run_p3():
-            #log.info("Skipping P3 JSearch queries (odd day)")
-            #continue
-        #for query in JSEARCH_QUERIES[priority]:
-            #try:
-                #jobs = search_jsearch(query)
-                #jsearch_total += len(jobs)
-                #raw_jobs.extend(jobs)
-            #except Exception as e:
-                #log.error(f"JSearch '{query}': {e}")
-            #time.sleep(1.5)
-    #source_counts["JSearch"] = jsearch_total
+
   
     # ── فیلتر + امتیازدهی ────────────────────────────────────────────────────
     seen_ids = set()
