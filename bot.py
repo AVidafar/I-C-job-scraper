@@ -104,6 +104,19 @@ TARGET_COUNTRIES = {
     "Poland",
 }
 
+GREENHOUSE_TITLE_KEYWORDS = [
+    "instrument",
+    "automation",
+    "controls",
+    "control",
+    "plc",
+    "scada",
+    "dcs",
+    "electrical",
+    "commissioning",
+    "process",
+]
+
 I&C Job Scraper Bot v5.0
 ========================
 منابع رایگان:
@@ -151,7 +164,7 @@ import re
 import time
 import traceback
 import urllib.parse
-import pprint  #جدید
+#import pprint  #جدید
 from collections import OrderedDict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -658,6 +671,26 @@ def is_relevant_ic_job(job: dict) -> bool:
             .replace("&", " ")
     )
 
+    for item in data.get("jobs", []):
+
+        title = item.get("title", "").lower()
+
+        if not any(k in title for k in IC_KEYWORDS):
+            continue
+
+        jobs.append({
+            "id": f"greenhouse-{item.get('id')}",
+            "title": item.get("title", ""),
+            "company": company.title(),
+            "location": (item.get("location") or {}).get("name", ""),
+            "url": item.get("absolute_url", ""),
+            "description": "",
+            "salary": "",
+            "remote": False,
+            "source": "Greenhouse",
+            "posted_at": ""
+        })
+        
     # حذف مشاغل کاملاً نامرتبط
     if any(word in text for word in NON_IC_KEYWORDS):
         return False
@@ -1408,8 +1441,8 @@ def fetch_greenhouse() -> list:
     Fetch jobs from Greenhouse job boards.
     """
     jobs = []
-    if len(jobs) < 3:
-        pprint.pprint(job)
+    #if len(jobs) < 3:
+        #pprint.pprint(job)
         
     for company in GREENHOUSE_COMPANIES:
 
@@ -1536,6 +1569,15 @@ def main() -> None:
     }
     qualified = []
 
+    debug = {
+        "total": len(raw_jobs),
+        "relevant": 0,
+        "seen": 0,
+        "blacklisted": 0,
+        "old": 0,
+        "low_score": 0,
+        "qualified": 0,
+    }
     for job in raw_jobs:
 
         debug = {
