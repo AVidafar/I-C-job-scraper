@@ -432,6 +432,56 @@ def is_relevant_ic_job(job: dict) -> bool:
 # ── Fit Score ───────────────────────────────────────────────────────────────
 def calculate_fit_score(job: dict) -> tuple:
     score = 0
+
+    TITLE_SCORES = {
+        "lead instrumentation engineer": 35,
+        "senior instrumentation engineer": 32,
+        "instrumentation engineer": 30,
+        "lead control engineer": 30,
+        "control engineer": 28,
+        "i&c engineer": 30,
+        "instrument engineer": 28,
+        "automation engineer": 25,
+        "process control engineer": 25,
+        "dcs engineer": 24,
+        "plc engineer": 22,
+        "scada engineer": 22,
+        "electrical & instrumentation engineer": 28,
+        "commissioning engineer": 18,
+    }
+
+    INDUSTRY_SCORES = {
+        "oil & gas": 18,
+        "oil and gas": 18,
+        "lng": 16,
+        "refinery": 16,
+        "petrochemical": 15,
+        "power plant": 14,
+        "energy": 12,
+        "chemical plant": 12,
+        "offshore": 14,
+        "pipeline": 12,
+    }
+
+    SYSTEM_SCORES = {
+        "siemens": 8,
+        "pcs7": 10,
+        "tia portal": 8,
+        "step7": 8,
+        "wincc": 8,
+        "honeywell": 8,
+        "experion": 10,
+        "emerson": 8,
+        "deltav": 10,
+        "abb": 8,
+        "800xa": 10,
+        "yokogawa": 8,
+        "centum": 10,
+        "foxboro": 8,
+        "schneider": 8,
+        "rockwell": 8,
+    }
+  
     EXPERT_KEYWORDS = {
         "feed": 10,
         "detail engineering": 8,
@@ -456,6 +506,10 @@ def calculate_fit_score(job: dict) -> tuple:
     title    = (job.get("title") or "").lower()
     desc     = (job.get("description") or "").lower()
     combined = f"{title} {desc}"
+
+    for title_keyword, pts in TITLE_SCORES.items():
+        if title_keyword in title:
+            score += pts
   
     company = (job.get("company") or "").lower()
     if any(c in company for c in BLACKLIST_COMPANIES):
@@ -465,7 +519,14 @@ def calculate_fit_score(job: dict) -> tuple:
         if keyword in combined:
             score += pts
 
-
+    for keyword, pts in INDUSTRY_SCORES.items():
+        if keyword in combined:
+            score += pts
+          
+    for keyword, pts in SYSTEM_SCORES.items():
+        if keyword in combined:
+            score += pts
+  
   
     for skill in MY_SKILLS:
         if _SKILL_PATTERNS[skill].search(combined):
