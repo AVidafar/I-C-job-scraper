@@ -1035,12 +1035,12 @@ def main() -> None:
     source_counts = {}
 
     sources = [
-    ("JSearch", search_jsearch),
-    ("Adzuna", fetch_adzuna),
-    ("Remotive", fetch_remotive),
-    ("Jobicy", fetch_jobicy),
-    ("ArbeitNow", fetch_arbeitnow),
-    ("Greenhouse", fetch_greenhouse),
+        ("JSearch", search_jsearch),
+        ("Adzuna", fetch_adzuna),
+        ("Remotive", fetch_remotive),
+        ("Jobicy", fetch_jobicy),
+        ("ArbeitNow", fetch_arbeitnow),
+        ("Greenhouse", fetch_greenhouse),
     ]
 
     for source_name, fetch_function in sources:
