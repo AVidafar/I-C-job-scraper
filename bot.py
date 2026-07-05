@@ -1465,20 +1465,23 @@ def main() -> None:
     ]
     relevant_jobs = 0 #new
     
-    for source_name, fetch_function in sources:
-        source_jobs = safe_fetch(
-            source_name,
-            fetch_function,
-        )
-        #jobs = safe_fetch(source_name, fetch_function)
-        source_counts[source_name] = len(source_jobs)
-        raw_jobs.extend(source_jobs)
+   for source_name, fetch_function in sources:
+    source_jobs = safe_fetch(
+        source_name,
+        fetch_function,
+    )
+    source_counts[source_name] = len(source_jobs)
+    raw_jobs.extend(source_jobs)
 
-        if not is_relevant_ic_job(job):
-            continue
-
-        relevant_jobs += 1
-    
+    # Count relevant jobs from this source (avoid referencing `job` before it's defined)
+    for _job in source_jobs:
+        try:
+            if is_relevant_ic_job(_job):
+                relevant_jobs += 1
+        except Exception:
+            # defensive: don't let one malformed job stop counting
+            log.exception("Error while checking relevance for job from %s", source_name) 
+  ###  
     raw_jobs = deduplicate_jobs(raw_jobs)
    # log.info("Greenhouse included in total jobs.")
     log.info("Collected %d jobs", len(raw_jobs))
