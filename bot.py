@@ -373,10 +373,13 @@ def is_relevant_ic_job(job: dict) -> bool:
     {(job.get('company') or '').lower()}
     """
 
+    # Check if it has non-IC keywords (exclude those jobs)
+    if any(word in text for word in NON_IC_KEYWORDS):
+        return False
+      
+    # Check if it has IC keywords (include those jobs)
     return any(keyword in text for keyword in IC_KEYWORDS)
 
-    if any(word in text for word in NON_IC_KEYWORDS):
-    return False
 
 # ── Fit Score ───────────────────────────────────────────────────────────────
 def calculate_fit_score(job: dict) -> tuple:
