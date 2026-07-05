@@ -269,31 +269,47 @@ def load_prompt_template() -> str:
     return "Write a short, professional cover letter for the '{title}' position at '{company}'. Focus on my technical I&C skills. Job link: {url}"
 
 
+from urllib.parse import urlsplit, urlunsplit
 import hashlib
+
 
 def build_job_id(job: dict) -> str:
     """
-    Build a stable unique ID for a job.
+    Build a stable unique identifier for a job.
     """
 
-    # اگر منبع شناسه معتبر داده، همان را استفاده کن
     if job.get("id"):
         return str(job["id"]).strip()
 
-    # اگر URL وجود دارد
-    if job.get("url"):
+    url = (job.get("url") or "").strip().lower()
+
+    if url:
+
+        parts = urlsplit(url)
+
+        normalized = urlunsplit((
+            parts.scheme,
+            parts.netloc,
+            parts.path.rstrip("/"),
+            "",     # remove query
+            "",     # remove fragment
+        ))
+
         return hashlib.sha256(
-            job["url"].strip().lower().encode()
+            normalized.encode("utf-8")
         ).hexdigest()
 
-    # در غیر این صورت از اطلاعات شغل Fingerprint بساز
-    text = "|".join([
+    fingerprint = "|".join([
         (job.get("title") or "").strip().lower(),
         (job.get("company") or "").strip().lower(),
         (job.get("location") or "").strip().lower(),
     ])
 
-    return hashlib.sha256(text.encode()).hexdigest()
+    return hashlib.sha256(
+        fingerprint.encode("utf-8")
+    ).hexdigest()
+
+
 
 
 
@@ -1088,52 +1104,51 @@ def main() -> None:
   
     # ── فیلتر + امتیازدهی ────────────────────────────────────────────────────
     seen_ids = set()
-    title_keys = set()
-    stats = {"blacklisted": 0, "seen": 0, "old": 0, "low_score": 0}
-    qualified = []
 
-    for job in raw_jobs:
-        try:
-            jid = build_job_id(job)
+stats = {
+    "blacklisted": 0,
+    "seen": 0,
+    "old": 0,
+    "low_score": 0,
+}
+
+qualified = []
+
+for job in raw_jobs:
+
+    try:
+
+        jid = build_job_id(job)
+
+        if jid in seen_jobs or jid in seen_ids:
+            stats["seen"] += 1
+            continue
+
+        seen_ids.add(jid)
+        seen_jobs[jid] = True
+
+        blacklisted, _ = is_blacklisted(job)
+
+        if blacklisted:
+            stats["blacklisted"] += 1
+            continue
+
+        if is_too_old(job):
+            stats["old"] += 1
+            continue
+
+        score, skills = calculate_fit_score(job)
+
+        if score < MIN_FIT_SCORE:
+            stats["low_score"] += 1
+            continue
+
+        qualified.append((job, score, skills))
+
+    except Exception:
+        log.exception("Processing error")
   
-            title_key = (
-              f"{(job.get('title') or '').lower().strip()}|"
-              f"{(job.get('company') or '').lower().strip()}"
-              f"{(job.get('location') or '').lower().strip()}"
-              )
-            if not jid:
-                continue
-            if jid in seen_jobs or jid in seen_ids:
-                stats["seen"] += 1
-                continue
-            if title_key in title_keys:
-                stats["seen"] += 1
-                seen_ids.add(jid)
-                seen_jobs[jid] = True
-                continue
-
-            seen_ids.add(jid)
-            seen_jobs[jid] = True
-            title_keys.add(title_key)
-
-            bl, _ = is_blacklisted(job)
-            if bl:
-                stats["blacklisted"] += 1
-                continue
-
-            if is_too_old(job):
-                stats["old"] += 1
-                continue
-
-            score, skills = calculate_fit_score(job)
-            if score < MIN_FIT_SCORE:
-                stats["low_score"] += 1
-                continue
-
-            qualified.append((job, score, skills))
-        except Exception as e:
-            log.error(f"Processing error: {e}")
-
+    
     qualified.sort(key=lambda x: x[1], reverse=True)
 
     log.info(
