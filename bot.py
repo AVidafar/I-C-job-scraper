@@ -330,6 +330,7 @@ IC_KEYWORDS = [
     "instrumentation",
     "instrument engineer",
     "control engineer",
+    "control systems",
     "process control",
     "scada",
     "dcs",
@@ -340,7 +341,31 @@ IC_KEYWORDS = [
     "control system",
     "I&C engineer",
     "automation enginner",
+    "siemens pcs7",
+    "honeywell",
+    "yokogawa",
+    "emerson",
+    "abb",
+    "foxboro",
+    "field instrumentation",
+    "E&I engineer",
 ]
+
+NON_IC_KEYWORDS = [
+    "software",
+    "backend",
+    "frontend",
+    "full stack",
+    "machine learning",
+    "artificial intelligence",
+    "ai engineer",
+    "ios",
+    "android",
+    "react",
+    "python developer",
+    "java developer",
+]
+
 def is_relevant_ic_job(job: dict) -> bool:
     text = f"""
     {(job.get('title') or '').lower()}
@@ -350,6 +375,8 @@ def is_relevant_ic_job(job: dict) -> bool:
 
     return any(keyword in text for keyword in IC_KEYWORDS)
 
+    if any(word in text for word in NON_IC_KEYWORDS):
+    return False
 
 # ── Fit Score ───────────────────────────────────────────────────────────────
 def calculate_fit_score(job: dict) -> tuple:
@@ -1052,8 +1079,9 @@ def main() -> None:
             source_name,
             fetch_function,
         )
-        source_counts[source_name] = len(source_jobs)
-        raw_jobs.extend(source_jobs)
+        jobs = safe_fetch(source_name, fetch_function)
+        source_counts[source_name] = len(jobs)
+        raw_jobs.extend(jobs)
 
     raw_jobs = deduplicate_jobs(raw_jobs)
    # log.info("Greenhouse included in total jobs.")
