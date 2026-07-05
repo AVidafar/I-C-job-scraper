@@ -459,7 +459,7 @@ def calculate_fit_score(job: dict) -> tuple:
   
     company = (job.get("company") or "").lower()
     if any(c in company for c in BLACKLIST_COMPANIES):
-        continue
+        return (0, [])  # ✅ Return early instead of continue
   
     for keyword, pts in EXPERT_KEYWORDS.items():
         if keyword in combined:
