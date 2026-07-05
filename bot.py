@@ -919,20 +919,25 @@ def deduplicate_jobs(jobs: list) -> list:
     """
     Remove duplicate jobs collected from different sources.
     """
+
     seen = set()
     unique = []
 
-  for job in jobs:
+    for job in jobs:
         jid = build_job_id(job)
+
         if jid in seen:
             continue
+
         seen.add(jid)
         unique.append(job)
+
     log.info(
         "Duplicate removal: %d -> %d jobs",
         len(jobs),
         len(unique),
     )
+
     return unique
 
 
