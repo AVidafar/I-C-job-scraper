@@ -113,6 +113,9 @@ CF_WORKER_URL    = os.environ.get("CF_WORKER_URL", "")
 ADZUNA_APP_ID    = os.environ.get("ADZUNA_APP_ID", "")
 ADZUNA_API_KEY   = os.environ.get("ADZUNA_API_KEY", "")
 
+ADZUNA_APP_ID = os.getenv("ADZUNA_APP_ID", "")
+ADZUNA_API_KEY = os.getenv("ADZUNA_API_KEY", "")
+
 SEEN_JOBS_FILE   = SCRIPT_DIR / "seen_jobs.txt"
 MAX_SEEN_JOBS    = 3000
 MAX_JOBS_PER_RUN = 20
@@ -466,8 +469,9 @@ def fetch_arbeitnow() -> list:
 
 def fetch_adzuna() -> list:
     if not ADZUNA_APP_ID or not ADZUNA_API_KEY:
-        log.info("Skipping Adzuna (API credentials missing)")
+        log.info("Skipping Adzuna (credentials not configured)")
         return []
+
     results = []
     for q in ["I&C junior engineer", "I&C senior engineer", "Instrument engineer", "control system engineer", "PLC engineer", "SCADA engineer", "Control engineer", "PLC programmer remote"]:
         try:
@@ -651,7 +655,6 @@ def deduplicate_jobs(jobs: list) -> list:
     unique = []
 
     for job in jobs:
-
         title = (job.get("title") or "").strip().lower()
         company = (job.get("company") or "").strip().lower()
         location = (job.get("location") or "").strip().lower()
