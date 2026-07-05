@@ -1465,7 +1465,7 @@ def main() -> None:
     ]
     relevant_jobs = 0 #new
     
-   for source_name, fetch_function in sources:
+    for source_name, fetch_function in sources:
         source_jobs = safe_fetch(
         source_name,
         fetch_function,
