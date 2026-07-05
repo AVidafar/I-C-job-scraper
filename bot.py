@@ -1,4 +1,4 @@
-""""
+  """"
 I&C Job Scraper Bot v5.0
 ========================
 منابع رایگان:
@@ -1105,12 +1105,12 @@ def main() -> None:
     # ── فیلتر + امتیازدهی ────────────────────────────────────────────────────
     seen_ids = set()
 
-stats = {
-    "blacklisted": 0,
-    "seen": 0,
-    "old": 0,
-    "low_score": 0,
-}
+    stats = {
+        "blacklisted": 0,
+        "seen": 0,
+        "old": 0,
+        "low_score": 0,
+        }
 
 qualified = []
 
