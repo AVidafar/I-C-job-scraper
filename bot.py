@@ -466,6 +466,7 @@ def fetch_arbeitnow() -> list:
 
 def fetch_adzuna() -> list:
     if not ADZUNA_APP_ID or not ADZUNA_API_KEY:
+        log.info("Skipping Adzuna (API credentials missing)")
         return []
     results = []
     for q in ["I&C junior engineer", "I&C senior engineer", "Instrument engineer", "control system engineer", "PLC engineer", "SCADA engineer", "Control engineer", "PLC programmer remote"]:
@@ -973,6 +974,14 @@ def deduplicate_jobs(jobs: list) -> list:
 
     return unique
 
+
+GREENHOUSE_COMPANIES = [
+    "openai",
+    "canonical",
+    "shopify",
+    "reddit",
+    "cloudflare",
+]
 # ── Greenhouse Companies ─────────────────────────────────────
 def fetch_greenhouse() -> list:
     """
@@ -1039,7 +1048,6 @@ def main() -> None:
     source_counts = {}
 
     sources = [
-        ("JSearch", search_jsearch),
         ("Adzuna", fetch_adzuna),
         ("Remotive", fetch_remotive),
         ("Jobicy", fetch_jobicy),
