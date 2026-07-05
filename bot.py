@@ -646,37 +646,6 @@ def fetch_linkedin1() -> list:
 
 # ── Remove duplicate jobs ────────────────────────────────────────────────
 
-def deduplicate_jobs(jobs: list) -> list:
-    """
-    Remove duplicate jobs collected from different sources.
-    """
-
-    seen = set()
-    unique = []
-
-    for job in jobs:
-        title = (job.get("title") or "").strip().lower()
-        company = (job.get("company") or "").strip().lower()
-        location = (job.get("location") or "").strip().lower()
-
-        key = (title, company, location)
-
-        if key in seen:
-            continue
-
-        seen.add(key)
-        unique.append(job)
-
-    log.info(
-        "Duplicate removal: %d → %d jobs",
-        len(jobs),
-        len(unique),
-    )
-
-    return unique
-
-
-
 
 # ── JSearch API (اختیاری) ───────────────────────────────────────────────────
 
