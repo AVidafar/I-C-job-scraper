@@ -151,6 +151,7 @@ import re
 import time
 import traceback
 import urllib.parse
+import pprint  #جدید
 from collections import OrderedDict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -648,14 +649,24 @@ def is_relevant_ic_job(job: dict) -> bool:
         (job.get("title") or "").lower(),
         (job.get("description") or "").lower(),
         (job.get("company") or "").lower(),
+        (job.get("location") or "").lower(),
     ])
 
-    # حذف مشاغل نرم‌افزاری
+    text = (
+        text.replace("-", " ")
+            .replace("/", " ")
+            .replace("&", " ")
+    )
+
+    # حذف مشاغل کاملاً نامرتبط
     if any(word in text for word in NON_IC_KEYWORDS):
         return False
 
-    # باید حداقل یک کلمه تخصصی I&C داشته باشد
-    return any(word in text for word in IC_KEYWORDS)
+    # اگر یکی از کلمات تخصصی وجود داشت
+    if any(word in text for word in IC_KEYWORDS):
+        return True
+
+    return False
 
 # ── Fit Score ───────────────────────────────────────────────────────────────
 def calculate_fit_score(job: dict) -> tuple:
@@ -1397,7 +1408,9 @@ def fetch_greenhouse() -> list:
     Fetch jobs from Greenhouse job boards.
     """
     jobs = []
-
+    if len(jobs) < 3:
+        pprint.pprint(job)
+        
     for company in GREENHOUSE_COMPANIES:
 
         url = f"https://boards-api.greenhouse.io/v1/boards/{company}/jobs"
