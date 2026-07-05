@@ -1112,106 +1112,106 @@ def main() -> None:
         "low_score": 0,
         }
 
-  qualified = []
+      qualified = []
 
-  for job in raw_jobs:
+      for job in raw_jobs:
 
-    try:
+        try:
 
-        jid = build_job_id(job)
+            jid = build_job_id(job)
 
-        if jid in seen_jobs or jid in seen_ids:
-            stats["seen"] += 1
-            continue
+            if jid in seen_jobs or jid in seen_ids:
+                stats["seen"] += 1
+                continue
 
-        seen_ids.add(jid)
-        seen_jobs[jid] = True
+            seen_ids.add(jid)
+            seen_jobs[jid] = True
 
-        blacklisted, _ = is_blacklisted(job)
+            blacklisted, _ = is_blacklisted(job)
 
-        if blacklisted:
-            stats["blacklisted"] += 1
-            continue
+            if blacklisted:
+                stats["blacklisted"] += 1
+                continue
 
-        if is_too_old(job):
-            stats["old"] += 1
-            continue
+            if is_too_old(job):
+                stats["old"] += 1
+                continue
 
-        score, skills = calculate_fit_score(job)
+            score, skills = calculate_fit_score(job)
 
-        if score < MIN_FIT_SCORE:
-            stats["low_score"] += 1
-            continue
+            if score < MIN_FIT_SCORE:
+                stats["low_score"] += 1
+                continue
 
-        qualified.append((job, score, skills))
+            qualified.append((job, score, skills))
 
-    except Exception:
-        log.exception("Processing error")
+        except Exception:
+            log.exception("Processing error")
   
     
-    qualified.sort(key=lambda x: x[1], reverse=True)
+        qualified.sort(key=lambda x: x[1], reverse=True)
 
-    log.info(
-        f"Qualified: {len(qualified)} | BL: {stats['blacklisted']} | "
-        f"Seen: {stats['seen']} | Old: {stats['old']} | Low: {stats['low_score']}"
-    )
+        log.info(
+            f"Qualified: {len(qualified)} | BL: {stats['blacklisted']} | "
+            f"Seen: {stats['seen']} | Old: {stats['old']} | Low: {stats['low_score']}"
+        )
 
     # ── ارسال به تلگرام ──────────────────────────────────────────────────────
-    active_sources = {k: v for k, v in source_counts.items() if v > 0}
-    sources_line = " | ".join(f"{k}: {v}" for k, v in active_sources.items())
+        active_sources = {k: v for k, v in source_counts.items() if v > 0}
+        sources_line = " | ".join(f"{k}: {v}" for k, v in active_sources.items())
 
-    if not qualified:
+        if not qualified:
+            send_telegram(
+                f"🔍 <b>Daily Report</b>\n📅 {now}\n\n"
+                f"No qualified jobs found.\n\n"
+                f"📌 {sources_line or 'No sources'}\n"
+                f"⛔ {stats['blacklisted']} filtered | "
+                f"📉 {stats['low_score']} low score | "
+                f"🔁 {stats['seen']} duplicates | "
+                f"🕐 {stats['old']} old"
+            )
+            save_seen_jobs(seen_jobs)
+        return
+
         send_telegram(
-            f"🔍 <b>Daily Report</b>\n📅 {now}\n\n"
-            f"No qualified jobs found.\n\n"
-            f"📌 {sources_line or 'No sources'}\n"
+            f"🤖 <b>New I&C Jobs</b>\n"
+            f"📅 {now}\n\n"
+            f"✅ <b>{len(qualified)}</b> jobs (sorted by fit)\n"
             f"⛔ {stats['blacklisted']} filtered | "
-            f"📉 {stats['low_score']} low score | "
-            f"🔁 {stats['seen']} duplicates | "
-            f"🕐 {stats['old']} old"
+            f"📉 {stats['low_score']} low | "
+            f"🔁 {stats['seen']} dupes\n\n"
+            f"📌 {sources_line}\n"
+            f"🤖 ChatGPT Cover Letter: ON\n"
+            f"➖➖➖➖➖➖➖➖"
         )
+        time.sleep(1.5)
+
+        sent = 0
+        sheet_rows = []
+
+        for job, score, skills in qualified[:MAX_JOBS_PER_RUN]:
+            try:
+                buttons = build_job_buttons(job)
+                msg = format_job(job, score, skills)
+
+                if send_telegram(msg, reply_markup=buttons if buttons else None):
+                    sent += 1
+                    sheet_rows.append([
+                        job.get("title", ""), job.get("company", ""),
+                        job.get("source", ""), job.get("url", ""),
+                        job.get("posted_at", ""), job.get("salary", ""),
+                        score, job.get("location", ""),
+                        datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M"),
+                        "New", "ChatGPT URL"
+                    ])
+
+                time.sleep(1.5)
+            except Exception as e:
+                log.error(f"Send error: {e}")
+
+        batch_append_to_sheet(sheets, sheet_rows)
         save_seen_jobs(seen_jobs)
-    return
-
-    send_telegram(
-        f"🤖 <b>New I&C Jobs</b>\n"
-        f"📅 {now}\n\n"
-        f"✅ <b>{len(qualified)}</b> jobs (sorted by fit)\n"
-        f"⛔ {stats['blacklisted']} filtered | "
-        f"📉 {stats['low_score']} low | "
-        f"🔁 {stats['seen']} dupes\n\n"
-        f"📌 {sources_line}\n"
-        f"🤖 ChatGPT Cover Letter: ON\n"
-        f"➖➖➖➖➖➖➖➖"
-    )
-    time.sleep(1.5)
-
-    sent = 0
-    sheet_rows = []
-
-    for job, score, skills in qualified[:MAX_JOBS_PER_RUN]:
-        try:
-            buttons = build_job_buttons(job)
-            msg = format_job(job, score, skills)
-
-            if send_telegram(msg, reply_markup=buttons if buttons else None):
-                sent += 1
-                sheet_rows.append([
-                    job.get("title", ""), job.get("company", ""),
-                    job.get("source", ""), job.get("url", ""),
-                    job.get("posted_at", ""), job.get("salary", ""),
-                    score, job.get("location", ""),
-                    datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M"),
-                    "New", "ChatGPT URL"
-                ])
-
-            time.sleep(1.5)
-        except Exception as e:
-            log.error(f"Send error: {e}")
-
-    batch_append_to_sheet(sheets, sheet_rows)
-    save_seen_jobs(seen_jobs)
-    log.info(f"=== Done. Sent {sent}/{len(qualified)} ===")
+        log.info(f"=== Done. Sent {sent}/{len(qualified)} ===")
 
 if __name__ == "__main__":
     main()
