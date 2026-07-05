@@ -61,6 +61,49 @@ USER_PROFILE = {
         "Detailed Engineering",
     ]
 }
+
+MATCH_WEIGHTS = {
+    "title": 35,
+    "industry": 20,
+    "systems": 15,
+    "skills": 15,
+    "company": 10,
+    "location": 5,
+}
+#شرکت های هدف
+PREFERRED_COMPANIES = [
+    "Siemens",
+    "ABB",
+    "Emerson",
+    "Honeywell",
+    "Yokogawa",
+    "Schneider",
+    "Wood",
+    "Technip",
+    "SLB",
+    "Baker Hughes",
+    "Fluor",
+    "Bechtel",
+    "Saipem",
+    "Petrofac",
+    "Shell",
+    "BP",
+    "TotalEnergies",
+    "Equinor",
+]
+#کشورهای هدف
+TARGET_COUNTRIES = {
+    "Netherlands",
+    "Germany",
+    "Denmark",
+    "Norway",
+    "Sweden",
+    "Belgium",
+    "Finland",
+    "Turkey",
+    "Poland",
+}
+
 I&C Job Scraper Bot v5.0
 ========================
 منابع رایگان:
@@ -396,6 +439,97 @@ def calculate_resume_match(job: dict):
             matched.append(keyword)
 
     return min(score,100), matched
+
+
+# ── Calculate Overall Match ─────────────────────────────────────────────────────────
+def calculate_overall_match(job):
+
+    score = 0
+
+    matched = []
+
+    text = (
+        (job.get("title") or "") +
+        " " +
+        (job.get("description") or "")
+    ).lower()
+
+    # ------------------------
+    # Title
+    # ------------------------
+
+    for t in USER_PROFILE["target_titles"]:
+
+        if t.lower() in text:
+
+            score += MATCH_WEIGHTS["title"]
+
+            matched.append(t)
+
+            break
+
+    # ------------------------
+    # Industry
+    # ------------------------
+
+    for ind in USER_PROFILE["industries"]:
+
+        if ind.lower() in text:
+
+            score += MATCH_WEIGHTS["industry"]
+
+            matched.append(ind)
+
+            break
+
+    # ------------------------
+    # Systems
+    # ------------------------
+
+    for sys in USER_PROFILE["systems"]:
+
+        if sys.lower() in text:
+
+            score += MATCH_WEIGHTS["systems"]
+
+            matched.append(sys)
+
+            break
+
+    # ------------------------
+    # Company
+    # ------------------------
+
+    company = (job.get("company") or "").lower()
+
+    for c in PREFERRED_COMPANIES:
+
+        if c.lower() in company:
+
+            score += MATCH_WEIGHTS["company"]
+
+            matched.append(c)
+
+            break
+
+    # ------------------------
+    # Country
+    # ------------------------
+
+    location = (job.get("location") or "").lower()
+
+    for country in TARGET_COUNTRIES:
+
+        if country.lower() in location:
+
+            score += MATCH_WEIGHTS["location"]
+
+            matched.append(country)
+
+            break
+
+    return min(score,100), matched
+
 
 
 # ── Seen Jobs Cache ─────────────────────────────────────────────────────────
@@ -1045,8 +1179,9 @@ def format_job(
 
     # ---------- NEW ----------
     if resume_score is not None:
-        lines.append(f"🎯 Resume Match: <b>{resume_score}%</b>")
-
+        #lines.append(f"🎯 Resume Match: <b>{resume_score}%</b>")
+        lines.append(f"🏆 Overall Match: <b>{resume_score}%</b>")
+        
     if resume_matches:
         lines.append(
             "🧠 " + ", ".join(
@@ -1400,7 +1535,8 @@ def main() -> None:
                 continue
 
             score, skills = calculate_fit_score(job)
-            resume_score, resume_matches = calculate_resume_match(job)
+            #resume_score, resume_matches = calculate_resume_match(job)
+            overall_score, overall_matches = calculate_overall_match(job)
 
             if score < MIN_FIT_SCORE:
                 stats["low_score"] += 1
@@ -1457,7 +1593,8 @@ def main() -> None:
             try:
                 buttons = build_job_buttons(job)
               
-                resume_score, resume_matches = calculate_resume_match(job)
+                # resume_score, resume_matches = calculate_resume_match(job)
+                overall_score, overall_matches = calculate_overall_match(job)
 
                 msg = format_job(
                     job,
