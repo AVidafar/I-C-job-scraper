@@ -915,35 +915,24 @@ def batch_append_to_sheet(client, rows: list) -> None:
 
 
 # ── Remove duplicate jobs ────────────────────────────────────────────────
-
 def deduplicate_jobs(jobs: list) -> list:
     """
     Remove duplicate jobs collected from different sources.
     """
-
     seen = set()
     unique = []
 
-    for job in jobs:
-
-        title = (job.get("title") or "").strip().lower()
-        company = (job.get("company") or "").strip().lower()
-        location = (job.get("location") or "").strip().lower()
-
-        key = (title, company, location)
-
-        if key in seen:
+  for job in jobs:
+        jid = build_job_id(job)
+        if jid in seen:
             continue
-
-        seen.add(key)
+        seen.add(jid)
         unique.append(job)
-
-    info(
-        "Duplicate removal: %d → %d jobs",
+    log.info(
+        "Duplicate removal: %d -> %d jobs",
         len(jobs),
         len(unique),
     )
-
     return unique
 
 
