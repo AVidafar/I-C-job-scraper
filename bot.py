@@ -324,8 +324,34 @@ def save_seen_jobs(seen: OrderedDict) -> None:
     SEEN_JOBS_FILE.write_text("\n".join(ids), encoding="utf-8")
     log.info(f"Saved {len(ids)} IDs to cache")
 
-# ── Fit Score ───────────────────────────────────────────────────────────────
+# ── is_relevant_ic_job(job) ───────────────────────────────────────────────────────────────
 
+IC_KEYWORDS = [
+    "instrumentation",
+    "instrument engineer",
+    "control engineer",
+    "process control",
+    "scada",
+    "dcs",
+    "plc",
+    "automation",
+    "field engineer",
+    "commissioning",
+    "control system",
+    "I&C engineer",
+    "automation enginner",
+]
+def is_relevant_ic_job(job: dict) -> bool:
+    text = f"""
+    {(job.get('title') or '').lower()}
+    {(job.get('description') or '').lower()}
+    {(job.get('company') or '').lower()}
+    """
+
+    return any(keyword in text for keyword in IC_KEYWORDS)
+
+
+# ── Fit Score ───────────────────────────────────────────────────────────────
 def calculate_fit_score(job: dict) -> tuple:
     score = 0
     matched_skills = []
@@ -1072,7 +1098,8 @@ def main() -> None:
     for job in raw_jobs:
         try:
             jid = build_job_id(job)
-
+            if not is_relevant_ic_job(job):
+                continue
             if jid in seen_jobs or jid in seen_ids:
                 stats["seen"] += 1
                 continue
