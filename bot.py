@@ -1034,7 +1034,7 @@ def main() -> None:
     raw_jobs = []
     source_counts = {}
 
-   sources = [
+    sources = [
     ("JSearch", search_jsearch),
     ("Adzuna", fetch_adzuna),
     ("Remotive", fetch_remotive),
