@@ -1469,10 +1469,10 @@ def main() -> None:
             source_name,
             fetch_function,
         )
-        jobs = safe_fetch(source_name, fetch_function)
+        #jobs = safe_fetch(source_name, fetch_function)
         source_counts[source_name] = len(jobs)
         raw_jobs.extend(jobs)
-
+    
     raw_jobs = deduplicate_jobs(raw_jobs)
    # log.info("Greenhouse included in total jobs.")
     log.info("Collected %d jobs", len(raw_jobs))
@@ -1520,10 +1520,10 @@ def main() -> None:
             if not is_relevant_ic_job(job):
                 log.info("Rejected: %s", job.get("title"))
                 continue
-                log.info("Accepted: %s", job.get("title"))
-            
-            if not is_relevant_ic_job(job):
-                continue
+                
+            log.info("Accepted: %s", job.get("title"))
+
+
             if jid in seen_jobs or jid in seen_ids:
                 stats["seen"] += 1
                 continue
@@ -1548,18 +1548,19 @@ def main() -> None:
                 stats["low_score"] += 1
                 continue
 
-            qualified.append((job, score, skills))
+            #qualified.append((job, score, skills))
+            qualified.append((job, overall_score, overall_matches))
 
         except Exception:
             log.exception("Processing error")
   
         # Sort after collecting all qualified jobs
-        qualified.sort(key=lambda x: x[1], reverse=True)
+    qualified.sort(key=lambda x: x[1], reverse=True)
 
-        log.info(
-            f"Qualified: {len(qualified)} | BL: {stats['blacklisted']} | "
-            f"Seen: {stats['seen']} | Old: {stats['old']} | Low: {stats['low_score']}"
-        )
+    log.info(
+        f"Qualified: {len(qualified)} | BL: {stats['blacklisted']} | "
+        f"Seen: {stats['seen']} | Old: {stats['old']} | Low: {stats['low_score']}"
+     )
 
     # ── ارسال به تلگرام ──────────────────────────────────────────────────────
         # Prepare and send report
