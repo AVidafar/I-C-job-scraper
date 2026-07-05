@@ -1,4 +1,66 @@
 """
+# ================================
+# USER PROFILE
+# ================================
+
+USER_PROFILE = {
+
+    "target_titles": [
+        "Instrumentation Engineer",
+        "Senior Instrumentation Engineer",
+        "Lead Instrumentation Engineer",
+        "I&C Engineer",
+        "Control Engineer",
+        "Automation Engineer",
+        "Process Control Engineer",
+        "PLC Engineer",
+        "DCS Engineer",
+        "SCADA Engineer",
+    ],
+
+    "industries": [
+        "Oil & Gas",
+        "Petrochemical",
+        "Refinery",
+        "Gas Compressor Station",
+        "Power Plant",
+        "Energy",
+    ],
+
+    "systems": [
+        "PCS7",
+        "TIA Portal",
+        "STEP7",
+        "WinCC",
+        "Honeywell",
+        "Experion",
+        "Emerson",
+        "DeltaV",
+        "ABB",
+        "800xA",
+        "Yokogawa",
+        "CENTUM",
+        "Foxboro",
+        "Schneider",
+        "Rockwell",
+    ],
+
+    "keywords": [
+        "Instrumentation",
+        "Control",
+        "PLC",
+        "SCADA",
+        "DCS",
+        "SIS",
+        "ESD",
+        "Commissioning",
+        "Loop Check",
+        "FAT",
+        "SAT",
+        "FEED",
+        "Detailed Engineering",
+    ]
+}
 I&C Job Scraper Bot v5.0
 ========================
 منابع رایگان:
@@ -301,7 +363,39 @@ def build_job_id(job: dict) -> str:
     ).hexdigest()
 
 
+# ── ژalculate resume match ─────────────────────────────────────────────────────────
+def calculate_resume_match(job: dict):
 
+    score = 0
+
+    text = (
+        (job.get("title") or "") + " " +
+        (job.get("description") or "")
+    ).lower()
+
+    matched = []
+
+    for title in USER_PROFILE["target_titles"]:
+        if title.lower() in text:
+            score += 20
+            matched.append(title)
+
+    for industry in USER_PROFILE["industries"]:
+        if industry.lower() in text:
+            score += 15
+            matched.append(industry)
+
+    for system in USER_PROFILE["systems"]:
+        if system.lower() in text:
+            score += 8
+            matched.append(system)
+
+    for keyword in USER_PROFILE["keywords"]:
+        if keyword.lower() in text:
+            score += 4
+            matched.append(keyword)
+
+    return min(score,100), matched
 
 
 # ── Seen Jobs Cache ─────────────────────────────────────────────────────────
@@ -925,7 +1019,13 @@ def _score_bar(score: int) -> str:
     filled = round(score / 10)
     return "█" * filled + "░" * (10 - filled)
 
-def format_job(job: dict, score: int, skills: list) -> str:
+def format_job(
+    job: dict,
+    score: int,
+    skills: list,
+    resume_score: int = None,
+    resume_matches: list = None,
+) -> str:
     title   = html.escape(job.get("title") or "No Title")
     company = html.escape(job.get("company") or "Unknown")
     salary  = job.get("salary") or ""
@@ -933,7 +1033,7 @@ def format_job(job: dict, score: int, skills: list) -> str:
     semoji  = job.get("source_emoji", "🌐")
     posted  = job.get("posted_at") or ""
     loc     = html.escape(job.get("location") or "Remote")
-
+    
     lines = [
         f"💼 <b>{title}</b>",
         f"🏢 {company}",
@@ -942,9 +1042,26 @@ def format_job(job: dict, score: int, skills: list) -> str:
     if salary:
         lines.append(f"💰 <b>{html.escape(str(salary))}</b>")
     lines.append(f"📊 {_score_bar(score)} {score}/100")
+
+    # ---------- NEW ----------
+    if resume_score is not None:
+        lines.append(f"🎯 Resume Match: <b>{resume_score}%</b>")
+
+    if resume_matches:
+        lines.append(
+            "🧠 " + ", ".join(
+                html.escape(x) for x in resume_matches[:5]
+            )
+        )
+    # -------------------------
+
+  
     if skills:
-        lines.append(f"✅ {', '.join(html.escape(s) for s in skills)}")
+        lines.append(
+          f"✅ {', '.join(html.escape(s) for s in skills)}"
+        )
     lines.append(f"{semoji} {source}")
+  
     if posted:
         lines.append(f"📅 {posted}")
 
@@ -1283,6 +1400,7 @@ def main() -> None:
                 continue
 
             score, skills = calculate_fit_score(job)
+            resume_score, resume_matches = calculate_resume_match(job)
 
             if score < MIN_FIT_SCORE:
                 stats["low_score"] += 1
@@ -1338,7 +1456,16 @@ def main() -> None:
         for job, score, skills in qualified[:MAX_JOBS_PER_RUN]:
             try:
                 buttons = build_job_buttons(job)
-                msg = format_job(job, score, skills)
+              
+                resume_score, resume_matches = calculate_resume_match(job)
+
+                msg = format_job(
+                    job,
+                    score,
+                    skills,
+                    resume_score,
+                    resume_matches,
+                )
 
                 if send_telegram(msg, reply_markup=buttons if buttons else None):
                     sent += 1
