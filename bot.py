@@ -1520,10 +1520,13 @@ def fetch_lever() -> list:
                 timeout=20,
                 headers={"User-Agent": "Mozilla/5.0"}
             )
+            log.info(f"Lever URL: {url}")
+            log.info(f"Lever Status: {r.status_code}")
 
             if r.status_code != 200:
+                log.info(f"Lever Response: {r.text[:300]}")
                 continue
-
+          
             data = r.json()
 
             for item in data:
@@ -1576,8 +1579,8 @@ def main() -> None:
         ("Remotive", fetch_remotive),
         #("Jobicy", fetch_jobicy),
         ("ArbeitNow", fetch_arbeitnow),
-        ("Greenhouse", fetch_greenhouse),
-        ("Lever", fetch_lever),  #new
+        #("Greenhouse", fetch_greenhouse),
+        #("Lever", fetch_lever),  #new
     ]
     relevant_jobs = 0 #new
     
@@ -1589,6 +1592,7 @@ def main() -> None:
     source_counts[source_name] = len(source_jobs)
     raw_jobs.extend(source_jobs)
 
+
     # Count relevant jobs from this source (avoid referencing `job` before it's defined)
     for _job in source_jobs:
         try:
@@ -1598,6 +1602,13 @@ def main() -> None:
             # defensive: don't let one malformed job stop counting
             log.exception("Error while checking relevance for job from %s", source_name) 
   ###  
+    log.info("=" * 60)
+    log.info("SOURCE SUMMARY")
+
+    for name, count in source_counts.items():
+        log.info("%-20s : %4d jobs", name, count)
+
+    log.info("=" * 60)
     raw_jobs = deduplicate_jobs(raw_jobs)
    # log.info("Greenhouse included in total jobs.")
     log.info("Collected %d jobs", len(raw_jobs))
