@@ -1428,12 +1428,28 @@ def deduplicate_jobs(jobs: list) -> list:
     return unique
 
 
+#GREENHOUSE_COMPANIES = [
+   # "openai",
+    #"canonical",
+   # "shopify",
+   # "reddit",
+   # "cloudflare",
+#]
+
 GREENHOUSE_COMPANIES = [
-    "openai",
-    "canonical",
-    "shopify",
-    "reddit",
-    "cloudflare",
+    "anduril",
+    "astranis",
+    "crusoe",
+]
+
+LEVER_COMPANIES = [
+    "anduril",
+    "zipline",
+    "crusoe",
+    "astranis",
+    "saronic",
+    "skydio",
+    "shield-ai",
 ]
 # ── Greenhouse Companies ─────────────────────────────────────
 def fetch_greenhouse() -> list:
@@ -1484,6 +1500,59 @@ def fetch_greenhouse() -> list:
 
     return jobs
 
+
+
+# ── Fetch lever ─────────────────────────────────────────────────────────────────────
+
+def fetch_lever() -> list:
+    """
+    Fetch jobs from Lever job boards.
+    """
+    jobs = []
+
+    for company in LEVER_COMPANIES:
+
+        url = f"https://api.lever.co/v0/postings/{company}?mode=json"
+
+        try:
+            r = requests.get(
+                url,
+                timeout=20,
+                headers={"User-Agent": "Mozilla/5.0"}
+            )
+
+            if r.status_code != 200:
+                continue
+
+            data = r.json()
+
+            for item in data:
+
+                title = item.get("text", "")
+
+                jobs.append({
+                    "id": f"lever-{item.get('id')}",
+                    "title": title,
+                    "company": company.title(),
+                    "location": (
+                        item.get("categories", {})
+                        .get("location", "")
+                    ),
+                    "url": item.get("hostedUrl", ""),
+                    "description": "",
+                    "salary": "",
+                    "remote": False,
+                    "source": "Lever",
+                    "posted_at": "",
+                })
+
+        except Exception as e:
+            log.error(f"Lever ({company}) error: {e}")
+
+    log.info(f"Lever: {len(jobs)} jobs")
+
+    return jobs
+
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -1503,11 +1572,12 @@ def main() -> None:
     source_counts = {}
 
     sources = [
-        ("Adzuna", fetch_adzuna),
+        #("Adzuna", fetch_adzuna),
         ("Remotive", fetch_remotive),
-        ("Jobicy", fetch_jobicy),
+        #("Jobicy", fetch_jobicy),
         ("ArbeitNow", fetch_arbeitnow),
         ("Greenhouse", fetch_greenhouse),
+        ("Lever", fetch_lever),  #new
     ]
     relevant_jobs = 0 #new
     
