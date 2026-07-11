@@ -1575,23 +1575,25 @@ def main() -> None:
     source_counts = {}
 
     sources = [
-        #("Adzuna", fetch_adzuna),
-        ("Remotive", fetch_remotive),
-        #("Jobicy", fetch_jobicy),
-        ("ArbeitNow", fetch_arbeitnow),
-        #("Greenhouse", fetch_greenhouse),
-        #("Lever", fetch_lever),  #new
+    #("Adzuna", fetch_adzuna),
+    ("Remotive", fetch_remotive),
+    #("Jobicy", fetch_jobicy),
+    ("ArbeitNow", fetch_arbeitnow),
+    #("Greenhouse", fetch_greenhouse),
+    #("Lever", fetch_lever),
     ]
-    relevant_jobs = 0 #new
-    
-    for source_name, fetch_function in sources:
-        source_jobs = safe_fetch(
-        source_name,
-        fetch_function,
-        )
-    source_counts[source_name] = len(source_jobs)
-    raw_jobs.extend(source_jobs)
 
+    relevant_jobs = 0
+
+    for source_name, fetch_function in sources:
+
+        source_jobs = safe_fetch(
+            source_name,
+            fetch_function,
+        )
+
+        source_counts[source_name] = len(source_jobs)
+        raw_jobs.extend(source_jobs)
 
     # Count relevant jobs from this source (avoid referencing `job` before it's defined)
     for _job in source_jobs:
