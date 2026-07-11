@@ -1612,6 +1612,7 @@ def main() -> None:
     ("ArbeitNow", fetch_arbeitnow),
     #("Greenhouse", fetch_greenhouse),
     #("Lever", fetch_lever),
+    ("Indeed", fetch_indeed),
     ]
 
     relevant_jobs = 0
