@@ -657,6 +657,9 @@ NON_IC_KEYWORDS = [
 
 # ── Relevant I&C job ───────────────────────────────────────────────────────────────
 def is_relevant_ic_job(job: dict) -> bool:
+    """
+    Returns True if the job is related to Instrumentation & Control.
+    """
 
     text = " ".join([
         (job.get("title") or "").lower(),
@@ -665,42 +668,19 @@ def is_relevant_ic_job(job: dict) -> bool:
         (job.get("location") or "").lower(),
     ])
 
-    #text = (
-        #text.replace("-", " ")
-            #.replace("/", " ")
-            #.replace("&", " ")
-    #)
-    if any(word in text for word in NON_IC_KEYWORDS):
+    # Normalize separators
+    text = (
+        text.replace("-", " ")
+            .replace("/", " ")
+            .replace("&", " ")
+    )
+
+    # Reject unrelated jobs
+    if any(word.lower() in text for word in NON_IC_KEYWORDS):
         return False
 
-    return any(word in text for word in IC_KEYWORDS)
-
-    #for item in data.get("jobs", []):
-
-        #title = item.get("title", "").lower()
-
-        #if not any(k in title for k in IC_KEYWORDS):
-         #   continue
-
-    jobs.append({
-         "id": f"greenhouse-{item.get('id')}",
-         "title": item.get("title", ""),
-         "company": company.title(),
-         "location": (item.get("location") or {}).get("name", ""),
-         "url": item.get("absolute_url", ""),
-         "description": "",
-         "salary": "",
-         "remote": False,
-         "source": "Greenhouse",
-         "posted_at": ""
-     })
-        
-    # حذف مشاغل کاملاً نامرتبط
-    if any(word in text for word in NON_IC_KEYWORDS):
-        return False
-
-    # اگر یکی از کلمات تخصصی وجود داشت
-    if any(word in text for word in IC_KEYWORDS):
+    # Accept if any I&C keyword exists
+    if any(word.lower() in text for word in IC_KEYWORDS):
         return True
 
     return False
