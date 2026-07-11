@@ -1661,6 +1661,8 @@ def main() -> None:
         "low_score": 0,
         "qualified": 0,
     }
+
+    log.info("Processing %d jobs...", len(raw_jobs))
     for job in raw_jobs:
 
         debug = {
@@ -1673,7 +1675,16 @@ def main() -> None:
             "qualified": 0,
         }
         try:
+            log.info(
+                "JOB: %s | COMPANY: %s | SOURCE: %s",
+                job.get("title"),
+                job.get("company"),
+                job.get("source"),
+            )
             jid = build_job_id(job)
+            if not is_relevant_ic_job(job):
+                log.info("Rejected: %s", job.get("title"))
+                continue
 
             if len(raw_jobs) > 0:
                 log.info(
@@ -1681,20 +1692,12 @@ def main() -> None:
                     job.get("title"),
                     job.get("description", "")[:120]
             )
-                log.info(
-                    "JOB: %s | COMPANY: %s | SOURCE: %s",
-                    job.get("title"),
-                    job.get("company"),
-                    job.get("source"),
-                )
+
             
-            if not is_relevant_ic_job(job):
-                log.info("Rejected: %s", job.get("title"))
-                continue
                 debug["relevant"] += 1
                 
             log.info("Accepted: %s", job.get("title"))
-
+          
 
             if jid in seen_jobs or jid in seen_ids:
                 debug["seen"] += 1
