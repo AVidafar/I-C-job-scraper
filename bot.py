@@ -1674,6 +1674,19 @@ def main() -> None:
         }
         try:
             jid = build_job_id(job)
+
+            if len(raw_jobs) > 0:
+                log.info(
+                    "DEBUG JOB -> %s | %s",
+                    job.get("title"),
+                    job.get("description", "")[:120]
+            )
+                log.info(
+                    "JOB: %s | COMPANY: %s | SOURCE: %s",
+                    job.get("title"),
+                    job.get("company"),
+                    job.get("source"),
+                )
             
             if not is_relevant_ic_job(job):
                 log.info("Rejected: %s", job.get("title"))
