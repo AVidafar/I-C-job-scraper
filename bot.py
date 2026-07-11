@@ -682,18 +682,18 @@ def is_relevant_ic_job(job: dict) -> bool:
         #if not any(k in title for k in IC_KEYWORDS):
          #   continue
 
-        jobs.append({
-            "id": f"greenhouse-{item.get('id')}",
-            "title": item.get("title", ""),
-            "company": company.title(),
-            "location": (item.get("location") or {}).get("name", ""),
-            "url": item.get("absolute_url", ""),
-            "description": "",
-            "salary": "",
-            "remote": False,
-            "source": "Greenhouse",
-            "posted_at": ""
-        })
+    jobs.append({
+         "id": f"greenhouse-{item.get('id')}",
+         "title": item.get("title", ""),
+         "company": company.title(),
+         "location": (item.get("location") or {}).get("name", ""),
+         "url": item.get("absolute_url", ""),
+         "description": "",
+         "salary": "",
+         "remote": False,
+         "source": "Greenhouse",
+         "posted_at": ""
+     })
         
     # حذف مشاغل کاملاً نامرتبط
     if any(word in text for word in NON_IC_KEYWORDS):
