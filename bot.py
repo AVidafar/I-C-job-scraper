@@ -665,18 +665,22 @@ def is_relevant_ic_job(job: dict) -> bool:
         (job.get("location") or "").lower(),
     ])
 
-    text = (
-        text.replace("-", " ")
-            .replace("/", " ")
-            .replace("&", " ")
-    )
+    #text = (
+        #text.replace("-", " ")
+            #.replace("/", " ")
+            #.replace("&", " ")
+    #)
+    if any(word in text for word in NON_IC_KEYWORDS):
+        return False
 
-    for item in data.get("jobs", []):
+    return any(word in text for word in IC_KEYWORDS)
 
-        title = item.get("title", "").lower()
+    #for item in data.get("jobs", []):
 
-        if not any(k in title for k in IC_KEYWORDS):
-            continue
+        #title = item.get("title", "").lower()
+
+        #if not any(k in title for k in IC_KEYWORDS):
+         #   continue
 
         jobs.append({
             "id": f"greenhouse-{item.get('id')}",
