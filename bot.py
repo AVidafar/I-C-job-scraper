@@ -847,7 +847,7 @@ def fetch_remotive() -> list:
     log.info(f"Remotive -> {len(results)} jobs")
     return results
 #--------------------------------------------------
-def fetch_indeed():-> list:
+def fetch_indeed() -> list:
     endpoints = [
         "https://indeed.com/api/remote-jobs?category=Instrument+engineer&limit=20",
         "https://indeed.com/api/remote-jobs?search=Control+engineer&limit=10",
