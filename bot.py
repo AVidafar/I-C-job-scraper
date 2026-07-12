@@ -871,6 +871,15 @@ def fetch_linkedin():
 
         except Exception as e:
 
+            response = requests.get(url, headers=headers, timeout=20)
+#
+            log.info("Status: %s", response.status_code)
+            log.info("Type: %s", response.headers.get("content-type"))
+            log.info(response.text[:500])
+
+            data = response.json()
+#
+            
             log.error(
                 "LinkedIn error (%s): %s",
                 query,
