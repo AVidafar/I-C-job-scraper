@@ -871,21 +871,7 @@ def fetch_linkedin():
 
         except Exception as e:
 
-            response = requests.get(url, headers=headers, timeout=20)
-#
-            log.info("Status Code: %s", response.status_code)
-            log.info("Content-Type: %s", response.headers.get("Content-Type"))
-            log.info("Response preview:\n%s", response.text[:300])
-
-            if response.status_code != 200:
-                return []
-
-            if "application/json" not in (response.headers.get("Content-Type") or ""):
-                log.error("LinkedIn did not return JSON.")
-                return []
-
-            data = response.json()
-#
+            
             
             log.error(
                 "LinkedIn error (%s): %s",
@@ -1140,70 +1126,6 @@ def fetch_cloudflare_worker() -> list:
         log.error(f"CF Worker error: {e}")
         return []
 
-
-def fetch_linkedin() -> list:
-    endpoints = [
-        "https://www.linkedin.com/jobs/remote-jobs/"
-
-       
-    ]
-    results = []
-    for url in endpoints:
-        try:
-            resp = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
-            resp.raise_for_status()
-            for j in resp.json().get("jobs", []):
-                results.append({
-                    "id":           f"linkedin_{j.get('id', '')}",
-                    "title":        j.get("title", ""),
-                    "company":      j.get("company_name", ""),
-                    "description":  j.get("description", ""),
-                    "salary":       j.get("salary", ""),
-                    "remote":       True,
-                    "url":          j.get("url", ""),
-                    "source":       "Linkedin",
-                    "source_emoji": "🌐",
-                    "posted_at":    (j.get("publication_date") or "")[:10],
-                    "location":     "Remote",
-                })
-        except Exception as e:
-            log.error(f"Linkedin error: {e}")
-        time.sleep(1)
-    log.info(f"Linkedin -> {len(results)} jobs")
-    return results
-
-
-def fetch_linkedin1() -> list:
-    IandC_TERMS =  ["I&C junior engineer", "I&C senior engineer", "Instrument engineer", "control system engineer", "PLC engineer", "SCADA engineer", "Control engineer", "PLC programmer remote"]
-    try:
-        resp = requests.get("https://www.linkedin.com/jobs/remote-jobs/", timeout=15, headers={"User-Agent": "Mozilla/5.0"})
-        resp.raise_for_status()
-        results = []
-        for j in resp.json().get("data", []):
-            if not j.get("remote"):
-                continue
-            title = (j.get("title") or "").lower()
-            desc  = (j.get("description") or "").lower()[:300]
-            if not any(t in title or t in desc for t in IandC_TERMS):
-                continue
-            results.append({
-                "id":           f"linkedin1_{j.get('slug', '')}",
-                "title":        j.get("title", ""),
-                "company":      j.get("company_name", ""),
-                "description":  j.get("description", ""),
-                "salary":       "",
-                "remote":       True,
-                "url":          j.get("url", ""),
-                "source":       "Linkedin1",
-                "source_emoji": "🔷",
-                "posted_at":    datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-                "location":     "Remote",
-            })
-        log.info(f"Linkedin1 -> {len(results)} jobs")
-        return results
-    except Exception as e:
-        log.error(f"Linkedin1 error: {e}")
-        return []
 
 # ── Remove duplicate jobs ────────────────────────────────────────────────
 
