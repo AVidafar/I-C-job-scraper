@@ -873,9 +873,16 @@ def fetch_linkedin():
 
             response = requests.get(url, headers=headers, timeout=20)
 #
-            log.info("Status: %s", response.status_code)
-            log.info("Type: %s", response.headers.get("content-type"))
-            log.info(response.text[:500])
+            log.info("Status Code: %s", response.status_code)
+            log.info("Content-Type: %s", response.headers.get("Content-Type"))
+            log.info("Response preview:\n%s", response.text[:300])
+
+            if response.status_code != 200:
+                return []
+
+            if "application/json" not in (response.headers.get("Content-Type") or ""):
+                log.error("LinkedIn did not return JSON.")
+                return []
 
             data = response.json()
 #
