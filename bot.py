@@ -170,6 +170,8 @@ Cover Letter:
 """
 import hashlib
 import html
+import feedparser    #new
+import urllib.parse    #new
 import json
 import logging
 import os
