@@ -837,7 +837,49 @@ def fetch_remotive() -> list:
         time.sleep(1)
     log.info(f"Remotive -> {len(results)} jobs")
     return results
+#--------------------------------------------------
+LINKEDIN_QUERIES = [
+    "Instrumentation Engineer",
+    "Instrument Engineer",
+    "I&C Engineer",
+    "Automation Engineer",
+    "Control Systems Engineer",
+    "PLC Engineer",
+    "SCADA Engineer",
+    "DCS Engineer",
+    "Commissioning Engineer",
+    "E&I Engineer",
+    "Process Control Engineer",
+]
+#--------------------------------------------------
 
+def fetch_linkedin():
+
+    jobs = []
+
+    for query in LINKEDIN_QUERIES:
+
+        log.info("LinkedIn search: %s", query)
+
+        try:
+
+            #
+            # مرحله بعد این قسمت را کامل می‌کنیم
+            #
+
+            pass
+
+        except Exception as e:
+
+            log.error(
+                "LinkedIn error (%s): %s",
+                query,
+                e
+            )
+
+    log.info("LinkedIn: %d jobs", len(jobs))
+
+    return jobs
 #--------------------------------------------------
 INDEED_QUERIES = [
     "Instrumentation Engineer",
@@ -1616,6 +1658,7 @@ def main() -> None:
 
     sources = [
     ("Indeed", fetch_indeed),
+    ("LinkedIn", fetch_linkedin),
     #("Adzuna", fetch_adzuna),
     ("Remotive", fetch_remotive),
     #("Jobicy", fetch_jobicy),
