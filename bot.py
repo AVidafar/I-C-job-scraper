@@ -853,7 +853,8 @@ INDEED_QUERIES = [
 ]
 #--------------------------------------------------
 def fetch_indeed():
-
+    print("INSIDE FETCH INDEED") #new
+    print(INDEED_QUERIES)        #new
     jobs = []
 
     for query in INDEED_QUERIES:
