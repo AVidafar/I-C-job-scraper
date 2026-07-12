@@ -117,18 +117,7 @@ GREENHOUSE_TITLE_KEYWORDS = [
     "process",
 ]
 
-INDEED_QUERIES = [
-    "Instrumentation Engineer",
-    "Instrument Engineer",
-    "I&C Engineer",
-    "Automation Engineer",
-    "Control Systems Engineer",
-    "PLC Engineer",
-    "DCS Engineer",
-    "SCADA Engineer",
-    "Commissioning Engineer",
-    "Electrical Instrumentation Engineer",
-]
+
 
 I&C Job Scraper Bot v5.0
 ========================
@@ -848,6 +837,20 @@ def fetch_remotive() -> list:
         time.sleep(1)
     log.info(f"Remotive -> {len(results)} jobs")
     return results
+
+#--------------------------------------------------
+INDEED_QUERIES = [
+    "Instrumentation Engineer",
+    "Instrument Engineer",
+    "I&C Engineer",
+    "Automation Engineer",
+    "Control Systems Engineer",
+    "PLC Engineer",
+    "DCS Engineer",
+    "SCADA Engineer",
+    "Commissioning Engineer",
+    "Electrical Instrumentation Engineer",
+]
 #--------------------------------------------------
 def fetch_indeed():
 
