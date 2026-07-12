@@ -849,37 +849,41 @@ def fetch_remotive() -> list:
     log.info(f"Remotive -> {len(results)} jobs")
     return results
 #--------------------------------------------------
-def fetch_indeed() -> list:
-    endpoints = [
-        "https://indeed.com/api/remote-jobs?category=Instrument+engineer&limit=20",
-        "https://indeed.com/api/remote-jobs?search=Control+engineer&limit=10",
-        "https://indeed.com/api/remote-jobs?search=I&C+engineer&limit=10",
-       
-    ]
-    results = []
-    for url in endpoints:
+def fetch_indeed():
+
+    jobs = []
+
+    for query in INDEED_QUERIES:
+
+        log.info("Indeed search: %s", query)
+
         try:
-            resp = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
-            resp.raise_for_status()
-            for j in resp.json().get("jobs", []):
-                results.append({
-                    "id":           f"indeed{j.get('id', '')}",
-                    "title":        j.get("title", ""),
-                    "company":      j.get("company_name", ""),
-                    "description":  j.get("description", ""),
-                    "salary":       j.get("salary", ""),
-                    "remote":       True,
-                    "url":          j.get("url", ""),
-                    "source":       "Indeed",
-                    "source_emoji": "🌐",
-                    "posted_at":    (j.get("publication_date") or "")[:10],
-                    "location":     "Remote",
-                })
+
+            q = urllib.parse.quote(query)
+
+            url = (
+                f"https://www.indeed.com/rss?"
+                f"q={q}"
+            )
+
+            feed = feedparser.parse(url)
+
+            log.info(
+                "Indeed returned %d items",
+                len(feed.entries)
+            )
+
         except Exception as e:
-            log.error(f"Indeed error: {e}")
-        time.sleep(1)
-    log.info(f"Indeed -> {len(results)} jobs")
-    return results
+
+            log.error(
+                "Indeed error (%s): %s",
+                query,
+                e
+            )
+
+    log.info("Indeed: %d jobs", len(jobs))
+
+    return jobs
 
 #--------------------------------------------------
 def fetch_jobicy() -> list:
