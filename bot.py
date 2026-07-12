@@ -62,19 +62,6 @@ USER_PROFILE = {
     ]
 }
 
-INDEED_QUERIES = [
-    "Instrumentation Engineer",
-    "Instrument Engineer",
-    "I&C Engineer",
-    "Automation Engineer",
-    "Control Systems Engineer",
-    "PLC Engineer",
-    "DCS Engineer",
-    "SCADA Engineer",
-    "Commissioning Engineer",
-    "Electrical Instrumentation Engineer",
-]
-
 MATCH_WEIGHTS = {
     "title": 35,
     "industry": 20,
@@ -128,6 +115,19 @@ GREENHOUSE_TITLE_KEYWORDS = [
     "electrical",
     "commissioning",
     "process",
+]
+
+INDEED_QUERIES = [
+    "Instrumentation Engineer",
+    "Instrument Engineer",
+    "I&C Engineer",
+    "Automation Engineer",
+    "Control Systems Engineer",
+    "PLC Engineer",
+    "DCS Engineer",
+    "SCADA Engineer",
+    "Commissioning Engineer",
+    "Electrical Instrumentation Engineer",
 ]
 
 I&C Job Scraper Bot v5.0
@@ -1618,7 +1618,6 @@ def main() -> None:
     ("ArbeitNow", fetch_arbeitnow),
     #("Greenhouse", fetch_greenhouse),
     #("Lever", fetch_lever),
-    ("Indeed", fetch_indeed),
     ]
 
     relevant_jobs = 0
