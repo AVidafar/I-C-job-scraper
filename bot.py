@@ -866,6 +866,14 @@ def fetch_linkedin():
 
         ...
 
+        url = "https://linkedin-jobs-api2.p.rapidapi.com"
+
+        response = requests.get(
+            url,
+            headers=headers,
+            params=params,
+            timeout=20,
+        )
         response = requests.get(...)
 
         data = response.json()
