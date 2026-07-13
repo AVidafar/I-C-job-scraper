@@ -226,8 +226,9 @@ if not TELEGRAM_TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN not set")
 if not TELEGRAM_CHAT_ID:
     raise ValueError("TELEGRAM_CHAT_ID not set")
-
-RAPIDAPI_KEY       = os.environ.get("RAPIDAPI_KEY", "")
+    
+RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
+#RAPIDAPI_KEY       = os.environ.get("RAPIDAPI_KEY", "")
 GSHEET_CREDENTIALS = os.environ.get("GSHEET_CREDENTIALS", "")
 GSHEET_ID          = os.environ.get("GSHEET_ID", "")
 GSHEET_SHEET_NAME  = "Jobs"
@@ -852,36 +853,26 @@ LINKEDIN_QUERIES = [
     "Process Control Engineer",
 ]
 #--------------------------------------------------
-
 def fetch_linkedin():
 
     jobs = []
 
+    headers = {
+        "X-RapidAPI-Key": RAPIDAPI_KEY,
+        "X-RapidAPI-Host": "..."
+    }
+
     for query in LINKEDIN_QUERIES:
 
-        log.info("LinkedIn search: %s", query)
+        ...
 
-        try:
+        response = requests.get(...)
 
-            #
-            # مرحله بعد این قسمت را کامل می‌کنیم
-            #
+        data = response.json()
 
-            pass
+        ...
 
-        except Exception as e:
-
-            
-            
-            log.error(
-                "LinkedIn error (%s): %s",
-                query,
-                e
-            )
-
-    log.info("LinkedIn: %d jobs", len(jobs))
-
-    return jobs
+        jobs.append(...)
 #--------------------------------------------------
 INDEED_QUERIES = [
     "Instrumentation Engineer",
