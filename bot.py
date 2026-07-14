@@ -104,6 +104,23 @@ TARGET_COUNTRIES = {
     "Poland",
 }
 
+JSEARCH_COUNTRIES = [
+    "tr",   # Turkey
+    "de",   # Germany
+    "nl",   # Netherlands
+    "se",   # Sweden
+    "no",   # Norway
+    "dk",   # Denmark
+    "fi",   # Finland
+    "be",   # Belgium
+    "at",   # Austria
+    "ch",   # Switzerland
+    "uk",   # United Kingdom
+    "ae",   # UAE
+    "qa",   # Qatar
+    "sa",   # Saudi Arabia
+]
+
 GREENHOUSE_TITLE_KEYWORDS = [
     "instrument",
     "automation",
@@ -549,7 +566,17 @@ def calculate_overall_match(job):
 
     return min(score,100), matched
 
+#------------Country-------------------------------------
+for country in JSEARCH_COUNTRIES:
 
+    for query in JSEARCH_QUERIES:
+
+        params = {
+            "query": query,
+            "country": country,
+            "num_pages": "1",
+            "date_posted": "week",
+        }
 
 # ── Seen Jobs Cache ─────────────────────────────────────────────────────────
 
@@ -1597,24 +1624,102 @@ def fetch_greenhouse() -> list:
 
 #-------------------------------------------------------------------------------------
 
+#JSEARCH_QUERIES = [
+ #   "Instrumentation Engineer",
+  #  "Instrument Engineer",
+   # "I&C Engineer",
+    #"Automation Engineer",
+ #   "Control Systems Engineer",
+  #  "PLC Engineer",
+   # "SCADA Engineer",
+    #"DCS Engineer",
+    #"Commissioning Engineer",
+    #"E&I Engineer",
+    #"Process Control Engineer",
+    #"Instrumentation and Control Engineer",
+    #"Automation Engineer PLC SCADA",
+    #"DCS Engineer Siemens PCS7",
+    #"Electrical and Instrumentation Engineer",
+    #"E&I Engineer",
+    #"Field Instrument Engineer",
+#]
+
 JSEARCH_QUERIES = [
+
+    # Instrumentation
     "Instrumentation Engineer",
+    "Senior Instrumentation Engineer",
+    "Lead Instrumentation Engineer",
+    "Principal Instrumentation Engineer",
+    "Field Instrument Engineer",
     "Instrument Engineer",
-    "I&C Engineer",
-    "Automation Engineer",
-    "Control Systems Engineer",
-    "PLC Engineer",
-    "SCADA Engineer",
-    "DCS Engineer",
-    "Commissioning Engineer",
-    "E&I Engineer",
-    "Process Control Engineer",
+    "Instrumentation Specialist",
+    "Instrumentation Technician",
+
+    # I&C
     "Instrumentation and Control Engineer",
-    "Automation Engineer PLC SCADA",
-    "DCS Engineer Siemens PCS7",
+    "I&C Engineer",
+    "Senior I&C Engineer",
+    "Lead I&C Engineer",
+
+    # Automation
+    "Automation Engineer",
+    "Industrial Automation Engineer",
+    "Automation Specialist",
+    "Automation and Control Engineer",
+
+    # PLC
+    "PLC Engineer",
+    "PLC Programmer",
+    "PLC Automation Engineer",
+
+    # SCADA / DCS
+    "SCADA Engineer",
+    "SCADA Specialist",
+    "DCS Engineer",
+    "PCS7 Engineer",
+    "Control Systems Engineer",
+
+    # Process Control
+    "Process Control Engineer",
+    "Advanced Process Control Engineer",
+
+    # Commissioning
+    "Commissioning Engineer Instrumentation",
+    "Commissioning Engineer Automation",
+    "Commissioning Engineer Control Systems",
+
+    # Electrical & Instrumentation
     "Electrical and Instrumentation Engineer",
     "E&I Engineer",
-    "Field Instrument Engineer",
+    "Electrical Instrumentation Engineer",
+
+    # Oil & Gas
+    "Offshore Instrument Engineer",
+    "Offshore Automation Engineer",
+    "Oil and Gas Instrumentation Engineer",
+
+    # OT
+    "Operational Technology Engineer",
+    "OT Engineer",
+    "Industrial Control Systems Engineer",
+
+    # Power
+    "Power Plant Instrumentation Engineer",
+    "Power Plant Control Engineer",
+
+    # Manufacturing
+    "Controls Engineer",
+    "Electrical Controls Engineer",
+    "Industrial Controls Engineer",
+
+    # Siemens
+    "Siemens PCS7 Engineer",
+    "TIA Portal Engineer",
+
+    # General
+    "Control Engineer",
+    "Control System Engineer",
 ]
 # ── JSearch ─────────────────────────────────────
 def fetch_jsearch() -> list:
