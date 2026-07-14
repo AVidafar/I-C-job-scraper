@@ -1534,6 +1534,12 @@ JSEARCH_QUERIES = [
     "Commissioning Engineer",
     "E&I Engineer",
     "Process Control Engineer",
+    "Instrumentation and Control Engineer",
+    "Automation Engineer PLC SCADA",
+    "DCS Engineer Siemens PCS7",
+    "Electrical and Instrumentation Engineer",
+    "E&I Engineer",
+    "Field Instrument Engineer",
 ]
 # ── JSearch ─────────────────────────────────────
 def fetch_jsearch() -> list:
@@ -1583,7 +1589,10 @@ def fetch_jsearch() -> list:
             log.info("Keys: %s", list(data.keys()))
             log.info("Returned jobs: %d", len(data.get("data", [])))
 
-            for item in data.get("data", []):
+            log.info("Jobs found: %d",
+                     len(data.get("data", {}).get("jobs", [])))
+            #for item in data.get("data", []):
+            for item in data.get("data", {}).get("jobs", []):
 
                 jobs.append({
 
