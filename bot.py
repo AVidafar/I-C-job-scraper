@@ -104,22 +104,6 @@ TARGET_COUNTRIES = {
     "Poland",
 }
 
-JSEARCH_COUNTRIES = [
-    "tr",   # Turkey
-    "de",   # Germany
-    "nl",   # Netherlands
-    "se",   # Sweden
-    "no",   # Norway
-    "dk",   # Denmark
-    "fi",   # Finland
-    "be",   # Belgium
-    "at",   # Austria
-    "ch",   # Switzerland
-    "uk",   # United Kingdom
-    "ae",   # UAE
-    "qa",   # Qatar
-    "sa",   # Saudi Arabia
-]
 
 GREENHOUSE_TITLE_KEYWORDS = [
     "instrument",
@@ -189,8 +173,25 @@ import urllib.parse
 from collections import OrderedDict
 from datetime import datetime, timezone
 from pathlib import Path
-
 import requests
+
+JSEARCH_COUNTRIES = [
+    "tr",   # Turkey
+    "de",   # Germany
+    "nl",   # Netherlands
+    "se",   # Sweden
+    "no",   # Norway
+    "dk",   # Denmark
+    "fi",   # Finland
+    "be",   # Belgium
+    "at",   # Austria
+    "ch",   # Switzerland
+    "uk",   # United Kingdom
+    "ae",   # UAE
+    "qa",   # Qatar
+    "sa",   # Saudi Arabia
+]
+
 from dotenv import load_dotenv
 
 try:
