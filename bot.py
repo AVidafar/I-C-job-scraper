@@ -246,11 +246,11 @@ MAX_JOBS_PER_RUN = 20
 MIN_FIT_SCORE    = 35
 MAX_JOB_AGE_DAYS = 7
 
-JSEARCH_QUERIES = {
-    1: ["I&C junior engineer", "I&C senior engineer", "Instrument engineer", "control system engineer"],
-    2: ["PLC engineer", "SCADA engineer"],
-    3: ["Control engineer", "PLC programmer remote"],
-}
+#JSEARCH_QUERIES = {
+ #   1: ["I&C junior engineer", "I&C senior engineer", "Instrument engineer", "control system engineer"],
+  #  2: ["PLC engineer", "SCADA engineer"],
+   # 3: ["Control engineer", "PLC programmer remote"],
+#}
 
 _DEFAULT_SKILLS = [
     "siemens", "eplan", "basic", "instrument",
@@ -1521,25 +1521,88 @@ def fetch_greenhouse() -> list:
 
 
 #-------------------------------------------------------------------------------------
+
+JSEARCH_QUERIES = [
+    "Instrumentation Engineer",
+    "Instrument Engineer",
+    "I&C Engineer",
+    "Automation Engineer",
+    "Control Systems Engineer",
+    "PLC Engineer",
+    "SCADA Engineer",
+    "DCS Engineer",
+    "Commissioning Engineer",
+    "E&I Engineer",
+    "Process Control Engineer",
+]
 # ── JSearch ─────────────────────────────────────
 def fetch_jsearch() -> list:
-    response = requests.get(...)
 
-    data = response.json()
+    jobs = []
 
-    for item in data.get("jobs", []):
-        jobs.append({
-            "id": item.get("job_id", ""),
-            "title": item.get("job_title", ""),
-            "company": item.get("employer_name", ""),
-            "location": item.get("job_location", ""),
-            "url": item.get("job_apply_link", ""),
-            "description": item.get("job_description", ""),
-            "salary": "",
-            "posted_at": item.get("job_posted_at_datetime_utc", ""),
-            "remote": item.get("job_is_remote", False),
-            "source": "JSearch",
-         })
+    url = "https://jsearch.p.rapidapi.com/search"
+
+    headers = {
+        "X-RapidAPI-Key": RAPIDAPI_KEY,
+        "X-RapidAPI-Host": "jsearch.p.rapidapi.com",
+    }
+
+    for query in JSEARCH_QUERIES:
+
+        params = {
+            "query": query,
+            "page": "1",
+            "num_pages": "1",
+            "date_posted": "week",
+        }
+
+        try:
+
+            response = requests.get(
+                url,
+                headers=headers,
+                params=params,
+                timeout=30,
+            )
+
+            response.raise_for_status()
+
+            data = response.json()
+
+            for item in data.get("data", []):
+
+                jobs.append({
+
+                    "id": item.get("job_id", ""),
+
+                    "title": item.get("job_title", ""),
+
+                    "company": item.get("employer_name", ""),
+
+                    "location": item.get("job_location", ""),
+
+                    "url": item.get("job_apply_link", ""),
+
+                    "description": item.get("job_description", ""),
+
+                    "salary": "",
+
+                    "posted_at": item.get(
+                        "job_posted_at_datetime_utc", ""
+                    ),
+
+                    "remote": item.get(
+                        "job_is_remote", False
+                    ),
+
+                    "source": "JSearch",
+
+                })
+
+        except Exception as e:
+
+            log.error("JSearch (%s): %s", query, e)
+
     log.info("JSearch -> %d jobs", len(jobs))
 
     return jobs
