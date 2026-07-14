@@ -1523,24 +1523,23 @@ def fetch_greenhouse() -> list:
 #-------------------------------------------------------------------------------------
 # ── JSearch ─────────────────────────────────────
 def fetch_jsearch() -> list:
-            response = requests.get(...)
+        response = requests.get(...)
 
-            data = response.json()
+        data = response.json()
 
-            for item in data.get("jobs", []):
-                jobs.append({
-                    "id": item.get("job_id", ""),
-                    "title": item.get("job_title", ""),
-                    "company": item.get("employer_name", ""),
-                    "location": item.get("job_location", ""),
-                    "url": item.get("job_apply_link", ""),
-                    "description": item.get("job_description", ""),
-                    "salary": "",
-                    "posted_at": item.get("job_posted_at_datetime_utc", ""),
-                    "remote": item.get("job_is_remote", False),
-                    "source": "JSearch",
-
-                })
+        for item in data.get("jobs", []):
+            jobs.append({
+                "id": item.get("job_id", ""),
+                "title": item.get("job_title", ""),
+                "company": item.get("employer_name", ""),
+                "location": item.get("job_location", ""),
+                "url": item.get("job_apply_link", ""),
+                "description": item.get("job_description", ""),
+                "salary": "",
+                "posted_at": item.get("job_posted_at_datetime_utc", ""),
+                "remote": item.get("job_is_remote", False),
+                "source": "JSearch",
+            })
         log.info("JSearch -> %d jobs", len(jobs))
 
         return jobs
