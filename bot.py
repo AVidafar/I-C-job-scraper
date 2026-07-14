@@ -1540,21 +1540,27 @@ def fetch_jsearch() -> list:
     log.info("===== ENTER fetch_jsearch =====")
     jobs = []
 
-    url = "https://jsearch.p.rapidapi.com/search"
+    #url = "https://jsearch.p.rapidapi.com/search"
+    #url = "https://jsearch.p.rapidapi.com/job-search"
+    url = "https://jsearch.p.rapidapi.com/search-v2"
     RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
     log.info("RapidAPI Key loaded: %s", bool(RAPIDAPI_KEY))
+
     headers = {
+        "Content-Type": "application/json",
         "X-RapidAPI-Key": RAPIDAPI_KEY,
         "X-RapidAPI-Host": "jsearch.p.rapidapi.com",
     }
-
+    
+    log.info("Calling JSearch API v2...")
+    
     for query in JSEARCH_QUERIES:
         log.info("Searching JSearch for: %s", query)
         params = {
             "query": query,
-            "page": "1",
             "num_pages": "1",
-            "date_posted": "week",
+            "country": "all",
+            "date_posted": "month",
         }
 
         try:
@@ -1573,6 +1579,9 @@ def fetch_jsearch() -> list:
             response.raise_for_status()
 
             data = response.json()
+
+            log.info("Keys: %s", list(data.keys()))
+            log.info("Returned jobs: %d", len(data.get("data", [])))
 
             for item in data.get("data", []):
 
