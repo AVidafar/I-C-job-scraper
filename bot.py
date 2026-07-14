@@ -1537,18 +1537,19 @@ JSEARCH_QUERIES = [
 ]
 # ── JSearch ─────────────────────────────────────
 def fetch_jsearch() -> list:
-
+    log.info("===== ENTER fetch_jsearch =====")
     jobs = []
 
     url = "https://jsearch.p.rapidapi.com/search"
-
+    RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
+    log.info("RapidAPI Key loaded: %s", bool(RAPIDAPI_KEY))
     headers = {
         "X-RapidAPI-Key": RAPIDAPI_KEY,
         "X-RapidAPI-Host": "jsearch.p.rapidapi.com",
     }
 
     for query in JSEARCH_QUERIES:
-
+        log.info("Searching JSearch for: %s", query)
         params = {
             "query": query,
             "page": "1",
@@ -1564,6 +1565,10 @@ def fetch_jsearch() -> list:
                 params=params,
                 timeout=30,
             )
+            
+            log.info("Status Code: %s", response.status_code)
+            log.info("Content-Type: %s", response.headers.get("Content-Type"))
+            log.info("Response: %s", response.text[:300])
 
             response.raise_for_status()
 
@@ -1683,6 +1688,7 @@ def main() -> None:
     source_counts = {}
 
     sources = [
+    ("JSearch", fetch_jsearch),
     ("Indeed", fetch_indeed),
     ("LinkedIn", fetch_linkedin),
     #("Adzuna", fetch_adzuna),
