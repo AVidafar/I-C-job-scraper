@@ -687,7 +687,9 @@ def is_relevant_ic_job(job: dict) -> bool:
     # Accept if any I&C keyword exists
     if any(word.lower() in text for word in IC_KEYWORDS):
         return True
-
+        
+    log.info("Checking : %s", job.get("title"))  #new
+    log.info("TEXT = %s", text[:250])    #new
     return False
 
 # ── Fit Score ───────────────────────────────────────────────────────────────
@@ -1127,8 +1129,81 @@ def fetch_cloudflare_worker() -> list:
 
 
 # ── Remove duplicate jobs ────────────────────────────────────────────────
+    before = len(raw_jobs)
 
+    raw_jobs = remove_duplicates(raw_jobs)
 
+    after = len(raw_jobs)
+
+    log.info(
+        "Duplicate removal: %d -> %d jobs",
+        before,
+        after,
+    )
+#------Job Qualified---------------------------------------------------------------------
+    qualified_jobs = []
+
+    relevant_jobs = 0
+    seen_jobs = 0
+    blacklisted_jobs = 0
+    old_jobs = 0
+    low_score_jobs = 0
+
+    for job in raw_jobs:
+
+        if not is_relevant_ic_job(job):
+            continue
+
+        relevant_jobs += 1
+
+        if is_seen(job):
+            seen_jobs += 1
+            continue
+
+        if is_blacklisted(job):
+            blacklisted_jobs += 1
+            continue
+
+        if is_old(job):
+            old_jobs += 1
+            continue
+
+        score = calculate_fit_score(job)
+
+        if score < MIN_SCORE:
+            low_score_jobs += 1
+            continue
+
+        job["fit_score"] = score
+
+        qualified_jobs.append(job)
+#----------------------------مرتب سازی-------------------
+    qualified_jobs.sort(
+        key=lambda x: x["fit_score"],
+        reverse=True,
+    )
+#----------Final report----------------------------------------------
+    log.info(
+        "Qualified: %d | BL: %d | Seen: %d | Old: %d | Low: %d",
+        len(qualified_jobs),
+        blacklisted_jobs,
+        seen_jobs,
+        old_jobs,
+        low_score_jobs,
+    )
+#--------------Debug Summary-------------------------------------------
+    log.info("=" * 60)
+    log.info("DEBUG SUMMARY")
+
+    log.info("Total jobs      : %d", len(raw_jobs))
+    log.info("Relevant I&C    : %d", relevant_jobs)
+    log.info("Seen            : %d", seen_jobs)
+    log.info("Blacklisted     : %d", blacklisted_jobs)
+    log.info("Too old         : %d", old_jobs)
+    log.info("Low score       : %d", low_score_jobs)
+    log.info("Qualified       : %d", len(qualified_jobs))
+
+    log.info("=" * 60)
 # ── JSearch API (اختیاری) ───────────────────────────────────────────────────
 
 def _should_run_p3() -> bool:
@@ -1702,9 +1777,7 @@ def main() -> None:
 
     #sent_urls = load_sent_jobs(history_sheet)
   
-    raw_jobs = []
-    source_counts = {}
-
+ 
     sources = [
     ("JSearch", fetch_jsearch),
     ("Indeed", fetch_indeed),
@@ -1716,6 +1789,9 @@ def main() -> None:
     #("Greenhouse", fetch_greenhouse),
     #("Lever", fetch_lever),
     ]
+
+    raw_jobs = []
+    source_counts = {}
 
     relevant_jobs = 0
 
@@ -1732,6 +1808,10 @@ def main() -> None:
     # Count relevant jobs from this source (avoid referencing `job` before it's defined)
     for _job in source_jobs:
         try:
+            log.info("=" * 70)
+            log.info("TITLE : %s", job.get("title"))
+            log.info("COMPANY : %s", job.get("company"))
+            log.info("SOURCE : %s", job.get("source"))
             if is_relevant_ic_job(_job):
                 relevant_jobs += 1
         except Exception:
@@ -1741,10 +1821,12 @@ def main() -> None:
     log.info("=" * 60)
     log.info("SOURCE SUMMARY")
 
-    for name, count in source_counts.items():
-        log.info("%-20s : %4d jobs", name, count)
+    for source_name, count in source_counts.items():
+        log.info("%-20s : %4d jobs", source_name, count)
 
     log.info("=" * 60)
+
+    
     raw_jobs = deduplicate_jobs(raw_jobs)
    # log.info("Greenhouse included in total jobs.")
     log.info("Collected %d jobs", len(raw_jobs))
@@ -1816,6 +1898,7 @@ def main() -> None:
                 job.get("source"),
             )
             jid = build_job_id(job)
+
             if not is_relevant_ic_job(job):
                 log.info("Rejected: %s", job.get("title"))
                 continue
