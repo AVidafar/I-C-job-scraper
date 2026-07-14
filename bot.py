@@ -118,7 +118,22 @@ GREENHOUSE_TITLE_KEYWORDS = [
     "process",
 ]
 
-
+JSEARCH_COUNTRIES = [
+    "tr",   # Turkey
+    "de",   # Germany
+    "nl",   # Netherlands
+    "se",   # Sweden
+    "no",   # Norway
+    "dk",   # Denmark
+    "fi",   # Finland
+    "be",   # Belgium
+    "at",   # Austria
+    "ch",   # Switzerland
+    "uk",   # United Kingdom
+    "ae",   # UAE
+    "qa",   # Qatar
+    "sa",   # Saudi Arabia
+]
 
 I&C Job Scraper Bot v5.0
 ========================
@@ -551,17 +566,6 @@ def calculate_overall_match(job):
 
     return min(score,100), matched
 
-#------------Country-------------------------------------
-for country in JSEARCH_COUNTRIES:
-
-    for query in JSEARCH_QUERIES:
-
-        params = {
-            "query": query,
-            "country": country,
-            "num_pages": "1",
-            "date_posted": "week",
-        }
 
 # ── Seen Jobs Cache ─────────────────────────────────────────────────────────
 
@@ -1711,23 +1715,18 @@ def fetch_jsearch() -> list:
     log.info("===== ENTER fetch_jsearch =====")
     jobs = []
 
-JSEARCH_COUNTRIES = [
-    "tr",   # Turkey
-    "de",   # Germany
-    "nl",   # Netherlands
-    "se",   # Sweden
-    "no",   # Norway
-    "dk",   # Denmark
-    "fi",   # Finland
-    "be",   # Belgium
-    "at",   # Austria
-    "ch",   # Switzerland
-    "uk",   # United Kingdom
-    "ae",   # UAE
-    "qa",   # Qatar
-    "sa",   # Saudi Arabia
-]
-    
+#------------Country----
+for country in JSEARCH_COUNTRIES:
+
+    for query in JSEARCH_QUERIES:
+
+        params = {
+            "query": query,
+            "country": country,
+            "num_pages": "1",
+            "date_posted": "week",
+        }
+#------------ 
     #url = "https://jsearch.p.rapidapi.com/search"
     #url = "https://jsearch.p.rapidapi.com/job-search"
     url = "https://jsearch.p.rapidapi.com/search-v2"
