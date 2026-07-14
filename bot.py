@@ -175,22 +175,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 import requests
 
-JSEARCH_COUNTRIES = [
-    "tr",   # Turkey
-    "de",   # Germany
-    "nl",   # Netherlands
-    "se",   # Sweden
-    "no",   # Norway
-    "dk",   # Denmark
-    "fi",   # Finland
-    "be",   # Belgium
-    "at",   # Austria
-    "ch",   # Switzerland
-    "uk",   # United Kingdom
-    "ae",   # UAE
-    "qa",   # Qatar
-    "sa",   # Saudi Arabia
-]
 
 from dotenv import load_dotenv
 
@@ -1727,6 +1711,23 @@ def fetch_jsearch() -> list:
     log.info("===== ENTER fetch_jsearch =====")
     jobs = []
 
+JSEARCH_COUNTRIES = [
+    "tr",   # Turkey
+    "de",   # Germany
+    "nl",   # Netherlands
+    "se",   # Sweden
+    "no",   # Norway
+    "dk",   # Denmark
+    "fi",   # Finland
+    "be",   # Belgium
+    "at",   # Austria
+    "ch",   # Switzerland
+    "uk",   # United Kingdom
+    "ae",   # UAE
+    "qa",   # Qatar
+    "sa",   # Saudi Arabia
+]
+    
     #url = "https://jsearch.p.rapidapi.com/search"
     #url = "https://jsearch.p.rapidapi.com/job-search"
     url = "https://jsearch.p.rapidapi.com/search-v2"
