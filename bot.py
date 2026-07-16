@@ -118,22 +118,6 @@ GREENHOUSE_TITLE_KEYWORDS = [
     "process",
 ]
 
-JSEARCH_COUNTRIES = [
-    "tr",   # Turkey
-    "de",   # Germany
-    "nl",   # Netherlands
-    "se",   # Sweden
-    "no",   # Norway
-    "dk",   # Denmark
-    "fi",   # Finland
-    "be",   # Belgium
-    "at",   # Austria
-    "ch",   # Switzerland
-    "uk",   # United Kingdom
-    "ae",   # UAE
-    "qa",   # Qatar
-    "sa",   # Saudi Arabia
-]
 
 I&C Job Scraper Bot v5.0
 ========================
@@ -1714,6 +1698,24 @@ JSEARCH_QUERIES = [
     "Control Engineer",
     "Control System Engineer",
 ]
+#--------------------------------
+JSEARCH_COUNTRIES = [
+    "tr",   # Turkey
+    "de",   # Germany
+    "nl",   # Netherlands
+    "se",   # Sweden
+    "no",   # Norway
+    "dk",   # Denmark
+    "fi",   # Finland
+    "be",   # Belgium
+    "at",   # Austria
+    "ch",   # Switzerland
+    "uk",   # United Kingdom
+    "ae",   # UAE
+    "qa",   # Qatar
+    "sa",   # Saudi Arabia
+]
+
 # ── JSearch ─────────────────────────────────────
 def fetch_jsearch() -> list:
     log.info("===== ENTER fetch_jsearch =====")
