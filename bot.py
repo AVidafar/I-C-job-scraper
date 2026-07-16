@@ -1166,7 +1166,11 @@ def fetch_cloudflare_worker() -> list:
     low_score_jobs = 0
 
     for job in raw_jobs:
-
+        log.info("=" * 70)
+        log.info("TITLE : %s", job.get("title"))
+        log.info("COMPANY : %s", job.get("company"))
+        log.info("SOURCE : %s", job.get("source"))
+        
         if not is_relevant_ic_job(job):
             continue
 
@@ -1894,10 +1898,7 @@ def main() -> None:
     # Count relevant jobs from this source (avoid referencing `job` before it's defined)
     for _job in source_jobs:
         try:
-            log.info("=" * 70)
-            log.info("TITLE : %s", job.get("title"))
-            log.info("COMPANY : %s", job.get("company"))
-            log.info("SOURCE : %s", job.get("source"))
+           
             if is_relevant_ic_job(_job):
                 relevant_jobs += 1
         except Exception:
@@ -1966,7 +1967,6 @@ def main() -> None:
 
     log.info("Processing %d jobs...", len(raw_jobs))
     for job in raw_jobs:
-
         debug = {
             "total": len(raw_jobs),
             "relevant": 0,
