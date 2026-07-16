@@ -1919,6 +1919,18 @@ def main() -> None:
     log.info("Collected %d jobs", len(raw_jobs))
     log.info("Relevant I&C jobs: %d", relevant_jobs)
 
+    before = len(raw_jobs)
+
+    raw_jobs = deduplicate_jobs(raw_jobs)
+
+    after = len(raw_jobs)
+
+    log.info(
+        "Duplicate removal: %d -> %d jobs",
+        before,
+        after,
+    )
+
     #  raw_jobs = []
      #   source_counts = {}
 
