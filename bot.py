@@ -1715,111 +1715,82 @@ def fetch_jsearch() -> list:
     log.info("===== ENTER fetch_jsearch =====")
     jobs = []
     seen_ids = set()
-#------------Country----
-for country in JSEARCH_COUNTRIES:
-    log.info("=" * 60)
-    log.info("Country: %s", country)
-
-    for query in JSEARCH_QUERIES:
-
-        log.info("Searching: %s | %s", country, query)
-        params = {
-            "query": query,
-            "country": country,
-            "num_pages": "1",
-            "date_posted": "week",
-        }
-
-#------------ 
-    #url = "https://jsearch.p.rapidapi.com/search"
-    #url = "https://jsearch.p.rapidapi.com/job-search"
-    url = "https://jsearch.p.rapidapi.com/search-v2"
-    RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
-    log.info("RapidAPI Key loaded: %s", bool(RAPIDAPI_KEY))
-
-    headers = {
-        "Content-Type": "application/json",
-        "X-RapidAPI-Key": RAPIDAPI_KEY,
-        "X-RapidAPI-Host": "jsearch.p.rapidapi.com",
-    }
     
-    log.info("Calling JSearch API v2...")
-    
-    #for query in JSEARCH_QUERIES:
-      #  log.info("Searching JSearch for: %s", query)
-       # params = {
-        #    "query": query,
-         #   "num_pages": "1",
-          #  "country": "all",
-           # "date_posted": "month",
-        #}
+    # Loop through countries
+    for country in JSEARCH_COUNTRIES:
+        log.info("=" * 60)
+        log.info("Country: %s", country)
 
-        try:
+        for query in JSEARCH_QUERIES:
+            log.info("Searching: %s | %s", country, query)
+            params = {
+                "query": query,
+                "country": country,
+                "num_pages": "1",
+                "date_posted": "week",
+            }
 
-            response = requests.get(
-                url,
-                headers=headers,
-                params=params,
-                timeout=30,
-            )
+            url = "https://jsearch.p.rapidapi.com/search-v2"
+            RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
+            log.info("RapidAPI Key loaded: %s", bool(RAPIDAPI_KEY))
+
+            headers = {
+                "Content-Type": "application/json",
+                "X-RapidAPI-Key": RAPIDAPI_KEY,
+                "X-RapidAPI-Host": "jsearch.p.rapidapi.com",
+            }
             
-            log.info("Status Code: %s", response.status_code)
-            log.info("Content-Type: %s", response.headers.get("Content-Type"))
-            log.info("Response: %s", response.text[:300])
+            log.info("Calling JSearch API v2...")
 
-            response.raise_for_status()
-
-            data = response.json()
-
-            log.info("Keys: %s", list(data.keys()))
-            log.info("Returned jobs: %d", len(data.get("data", [])))
-
-            log.info("Jobs found: %d",
-                     len(data.get("data", {}).get("jobs", [])))
-            #for item in data.get("data", []):
-            for item in data.get("data", {}).get("jobs", []):
-                job_id = item.get("job_id")
-
-                if job_id in seen_ids:
-                    continue
-
-                seen_ids.add(job_id)
-                jobs.append({
+            try:
+                response = requests.get(
+                    url,
+                    headers=headers,
+                    params=params,
+                    timeout=30,
+                )
                 
-                    "id": item.get("job_id", ""),
+                log.info("Status Code: %s", response.status_code)
+                log.info("Content-Type: %s", response.headers.get("Content-Type"))
+                log.info("Response: %s", response.text[:300])
 
-                    "title": item.get("job_title", ""),
+                response.raise_for_status()
 
-                    "company": item.get("employer_name", ""),
+                data = response.json()
 
-                    "location": item.get("job_location", ""),
+                log.info("Keys: %s", list(data.keys()))
+                log.info("Returned jobs: %d", len(data.get("data", [])))
 
-                    "url": item.get("job_apply_link", ""),
+                log.info("Jobs found: %d",
+                         len(data.get("data", {}).get("jobs", [])))
+                
+                for item in data.get("data", {}).get("jobs", []):
+                    job_id = item.get("job_id")
 
-                    "description": item.get("job_description", ""),
+                    if job_id in seen_ids:
+                        continue
 
-                    "salary": "",
+                    seen_ids.add(job_id)
+                    jobs.append({
+                        "id": item.get("job_id", ""),
+                        "title": item.get("job_title", ""),
+                        "company": item.get("employer_name", ""),
+                        "location": item.get("job_location", ""),
+                        "url": item.get("job_apply_link", ""),
+                        "description": item.get("job_description", ""),
+                        "salary": "",
+                        "posted_at": item.get("job_posted_at_datetime_utc", ""),
+                        "remote": item.get("job_is_remote", False),
+                        "source": "JSearch",
+                    })
 
-                    "posted_at": item.get(
-                        "job_posted_at_datetime_utc", ""
-                    ),
+            except Exception as e:
+                log.error("JSearch (%s): %s", query, e)
 
-                    "remote": item.get(
-                        "job_is_remote", False
-                    ),
-
-                    "source": "JSearch",
-
-                })
-
-        except Exception as e:
-
-            log.error("JSearch (%s): %s", query, e)
+        log.info("Finished %s", country)
 
     log.info("JSearch -> %d jobs", len(jobs))
-
     return jobs
-    log.info("Finished %s", country)
 
 
 
